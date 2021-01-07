@@ -18,6 +18,25 @@ class Operations:
         self.dv_connection = connection
     
     #==============================================================================================================================================
+    # Utils methods
+    
+    # Get Dataset Metadata Field Item
+    #    Gets the metadata field item associated with the provided type name
+    # Input:
+    #    typeName: A type name for a metadata field
+    #    object: A dataset metadata object
+    # Output: 
+    #    item: A metadata field item or None
+    def get_metadata_field_item(self, typeName, metadata_object) -> object:
+        #Runs fields to find the correct one
+        for field in metadata_object['data']['citation']['fields']:
+            if(field['typeName'] == typeName):
+                return field
+        
+        return None
+        
+    
+    #==============================================================================================================================================
     # Generic methods
     
     # count All
@@ -88,7 +107,7 @@ class Operations:
             return -1
         
         # Create the request
-        query_str = '/info/metrics/' + dv_type + '/pastDays/' + days
+        query_str = '/info/metrics/' + object_type + '/pastDays/' + days
         request = dv_api.get_request(query_str)
         
         # JSON response
@@ -246,6 +265,44 @@ class Operations:
     #==============================================================================================================================================
     # Dataset specific methods
     
+    # Get all Dataset IDs
+    #    Gets all of the Dataset Persistent IDs.
+    # Input:
+    # Output: 
+    #    ids: A list with all of the Dataset persistent IDs.
+    def get_dataset_IDs(self):
+        # Connect to the Dataverse API
+        dv_api = self.dv_connection.connect()   
+        
+        # Declare all variables
+        start_page = 0
+        total_results = ''
+        condition = True
+        ids =  []
+        
+        # Loop to compensate for the limitation in showing results
+        while (condition):
+        
+            # Create the request
+            query_str = '/search?q=*'
+            params = {'start' : str(start_page), 'type' : 'dataset'}
+            request = dv_api.get_request(query_str, params=params)
+        
+            # JSON response
+            objects = json.loads(request.content.decode('utf-8', 'ignore'))
+        
+            # Filter by keyword
+            for dataset in objects['data']['items']:
+                if(dataset['global_id'] not in ids):
+                    ids.append(dataset['global_id'])
+                        
+            # Update start_page and total_results to cover for the limitation in showing results
+            start_page = start_page + self.rows
+            total_results = objects['data']['total_count']
+            condition = start_page < total_results      
+            
+        return ids
+    
     # Count Dataset By Subject to Month
     #    Returns a count of datasets filtered by subject, and up to a specified month $YYYY-DD in YYYY-MM format (e.g. 2018-01):
     # Input:
@@ -342,7 +399,7 @@ class Operations:
         
             # Filter by filecount
             for dataset in objects['data']['items']:
-                if(dataset['fileCount'] >= filecount):
+                if(dataset['fileCount'] >= int(filecount)):
                     count += 1
             
             # Update start_page and total_results to cover for the limitation in showing results
@@ -429,7 +486,105 @@ class Operations:
             condition = start_page < total_results  
             
         return dictionary
-         
+    
+    # Count Dataset Versions
+    #    Gets the number of versions associated with each existing Dataset
+    # Input:
+    # Output: 
+    #    dictionary: A dictionary containing the Dataset identifiers as keys, and the number of existing versions as value
+    def count_dataset_versions(self):
+        # Connect to the Dataverse API
+        dv_api = self.dv_connection.connect()
+        
+        # Declare all variables
+        dictionary = {}
+        dataset_ids = self.get_dataset_IDs()
+        
+        #Run the Dataset IDs array
+        for dataset_id in dataset_ids:
+            # Create the request
+            query_str = '/datasets/:persistentId/versions/?'
+            params = {'persistentId' : str(dataset_id)}
+            request = dv_api.get_request(query_str, params=params)
+        
+            # JSON response
+            objects = json.loads(request.content.decode('utf-8', 'ignore'))
+        
+            # Fill dictionary
+            if(dictionary.get(dataset_id) is None and objects['status'] == 'OK'):
+                dictionary[dataset_id] = len(objects['data'])
+            
+        return dictionary      
+    
+    # Count Dataset Draft Versions
+    #    Gets the number of draft versions associated with each existing Dataset
+    # Input:
+    # Output: 
+    #    dictionary: A dictionary containing the Dataset identifiers as keys, and the number of existing draft versions as value
+    def count_dataset_draft_versions(self):
+        # Connect to the Dataverse API
+        dv_api = self.dv_connection.connect()
+        
+        # Declare all variables
+        dictionary = {}
+        dataset_ids = self.get_dataset_IDs()
+        
+        #Run the Dataset IDs array
+        for dataset_id in dataset_ids:
+            # Create the request
+            query_str = '/datasets/:persistentId/versions/:draft?'
+            params = {'persistentId' : str(dataset_id)}
+            request = dv_api.get_request(query_str, params=params, auth=True)
+        
+            # JSON response
+            objects = json.loads(request.content.decode('utf-8', 'ignore'))
+            
+            # Fill dictionary
+            if(dictionary.get(dataset_id) is None and objects['status'] == 'OK'):
+                dictionary[dataset_id] = len(objects['data'])
+            
+        return dictionary  
+    
+    # Get Dataset Distributors
+    #    Gets the name and affiliation of the distributors of each Dataset
+    # Input:
+    # Output: 
+    #    dictionary: A dictionary containing the Dataset identifiers as keys, and a list containing the name and affiliation of the distributors as value
+    def get_dataset_distributors(self):
+        # Connect to the Dataverse API
+        dv_api = self.dv_connection.connect()
+        
+        # Declare all variables
+        dictionary = {}
+        dataset_ids = self.get_dataset_IDs()
+        
+        #Run the Dataset IDs array
+        for dataset_id in dataset_ids:
+            # Create the request
+            query_str = '/datasets/:persistentId/versions/:latest/metadata?'
+            params = {'persistentId' : str(dataset_id)}
+            request = dv_api.get_request(query_str, params=params)
+        
+            # JSON response
+            objects = json.loads(request.content.decode('utf-8', 'ignore'))
+        
+            # Fill dictionary
+            if(dictionary.get(dataset_id) is None and objects['status'] == 'OK'):
+                field = self.get_metadata_field_item('distributor', objects)
+                distributor = []
+                if(field is not None):
+                    
+                    #Run distributors
+                    for distr in field['value']:
+                        distributorName = distr['distributorName']['value']
+                        distributorAffiliation = None
+                        if('distributorAffiliation' in distr):
+                            distributorAffiliation = distr['distributorAffiliation']['value']
+                        distributor.append([distributorName, distributorAffiliation])
+
+                dictionary[dataset_id] = distributor
+            
+        return dictionary
     
     #==============================================================================================================================================
     # File specific methods
