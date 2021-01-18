@@ -5,8 +5,9 @@ Created on 7 Jan 2021
 '''
 import unittest
 import configparser
-from connection import dvconnection
-from metrics import operations
+from metrics.connection import dvconnection
+from metrics.operations import general_operations
+from metrics.operations import dataverse_operations
 
 class DataverseOperationsTest(unittest.TestCase):
 
@@ -19,7 +20,8 @@ class DataverseOperationsTest(unittest.TestCase):
     
     trr177_connection = dvconnection.Connection(base_url, api_key)
     
-    ops = operations.Operations(trr177_connection)
+    ops = general_operations.GeneralOperations(trr177_connection)
+    dataverse_ops = dataverse_operations.DataverseOperations(trr177_connection)
 
     def test_count_all_dataverse(self):
         count = self.ops.count_all('dataverse')
@@ -38,15 +40,15 @@ class DataverseOperationsTest(unittest.TestCase):
         self.assertIs(type(count), int, 'Must return an int')    
     
     def test_count_by_category_dataverse(self):
-        count = self.ops.count_dataverse_by_category('Organization')
+        count = self.dataverse_ops.count_dataverse_by_category('Organization')
         self.assertIs(type(count), int, 'Must return an int')    
     
     def test_count_by_datasetcount_dataverse(self):
-        count = self.ops.get_all_dataverse_datasetcount()
+        count = self.dataverse_ops.get_all_dataverse_datasetcount()
         self.assertIs(type(count), dict, 'Must return a dict')
         
     def test_get_size_dataverse(self):
-        count = self.ops.get_dataverse_size()
+        count = self.dataverse_ops.get_dataverse_size()
         self.assertIs(type(count), dict, 'Must return a dict')  
         
 if __name__ == "__main__":

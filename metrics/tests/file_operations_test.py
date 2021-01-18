@@ -5,8 +5,9 @@ Created on 7 Jan 2021
 '''
 import unittest
 import configparser
-from connection import dvconnection
-from metrics import operations
+from metrics.connection import dvconnection
+from metrics.operations import general_operations
+from metrics.operations import file_operations
 
 class FileOperationsTest(unittest.TestCase):
 
@@ -19,7 +20,8 @@ class FileOperationsTest(unittest.TestCase):
     
     trr177_connection = dvconnection.Connection(base_url, api_key)
     
-    ops = operations.Operations(trr177_connection)
+    ops = general_operations.GeneralOperations(trr177_connection)
+    file_ops = file_operations.FileOperations(trr177_connection)
 
     def test_count_all_file(self):
         count = self.ops.count_all('file')
@@ -34,11 +36,11 @@ class FileOperationsTest(unittest.TestCase):
         self.assertIs(type(count), int, 'Must return an int')
     
     def test_count_file_by_file_content_type(self):
-        count = self.ops.count_file_by_file_content_type('text/tab-separated-values')
+        count = self.file_ops.count_file_by_file_content_type('text/tab-separated-values')
         self.assertIs(type(count), int, 'Must return an int')    
     
     def test_count_all_files_by_file_content_type(self):
-        count = self.ops.count_all_files_by_file_content_type()
+        count = self.file_ops.count_all_files_by_file_content_type()
         self.assertIs(type(count), dict, 'Must return an dict')
         
     
