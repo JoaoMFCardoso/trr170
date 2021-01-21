@@ -21,8 +21,8 @@ class DataverseOperations:
     # ==============================================================================================================================================
     # Dataverse specific methods
 
-    # Get all Dataverse IDs
-    #    Gets all of the Dataverse Persistent IDs.
+    # Get Dataverse IDs
+    #    Gets all the Dataverse Persistent IDs.
     # Input:
     # Output:
     #    ids: A list with all of the Dataverse persistent IDs.
