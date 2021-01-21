@@ -18,8 +18,52 @@ class DataverseOperations:
     def __init__(self, connection: dvconnection):
         self.dv_connection = connection
 
-# ==============================================================================================================================================
+    # ==============================================================================================================================================
     # Dataverse specific methods
+
+    # Get all Dataverse IDs
+    #    Gets all of the Dataverse Persistent IDs.
+    # Input:
+    # Output:
+    #    ids: A list with all of the Dataverse persistent IDs.
+    def get_dataverse_ids(self):
+        # Connect to the Dataverse API
+        dv_api = self.dv_connection.connect()
+
+        # Declare all variables
+        start_page = 0
+        total_results = ''
+        condition = True
+        ids = []
+
+        # Add root dataverse. Id is always 1
+        root_query_str = '/dataverses/1'
+        request_root = dv_api.get_request(root_query_str, auth=True)
+        root_dataverse = json.loads(request_root.content.decode('utf-8', 'ignore'))
+        ids.append(root_dataverse['data']['alias'])
+
+        # Loop to compensate for the limitation in showing results
+        while condition:
+
+            # Create the request
+            query_str = '/search?q=*'
+            params = {'start': str(start_page), 'type': 'dataverse'}
+            request = dv_api.get_request(query_str, params=params, auth=True)
+
+            # JSON response
+            objects = json.loads(request.content.decode('utf-8', 'ignore'))
+
+            # Filter by keyword
+            for dataset in objects['data']['items']:
+                if dataset['identifier'] not in ids:
+                    ids.append(dataset['identifier'])
+
+            # Update start_page and total_results to cover for the limitation in showing results
+            start_page = start_page + self.rows
+            total_results = objects['data']['total_count']
+            condition = start_page < total_results
+
+        return ids
 
     # Count Dataverse By Category
     #    Returns a count of Dataverses in dataverse for the provided category

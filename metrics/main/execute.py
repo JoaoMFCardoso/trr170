@@ -3,14 +3,18 @@ Created on 10 Dec 2020
 
 @author: Joao M. F. Cardoso
 '''
-from connection import dvconnection
+from metrics.connection import dvconnection
+from metrics.operations import general_operations
+from metrics.operations import dataset_operations
+from metrics.operations import dataverse_operations
+from metrics.operations import file_operations
+from metrics.operations import user_operations
 import configparser
-import json
-import requests
-from urllib import request
-from metrics import operations
+
 
 # The main method.
+
+
 def main():
     # Get the configurations from config.ini
     config = configparser.ConfigParser()
@@ -21,31 +25,44 @@ def main():
     
     trr177_connection = dvconnection.Connection(base_url, api_key)
    
-    ops = operations.Operations(trr177_connection)
+    gen_ops = general_operations.GeneralOperations(trr177_connection)
+    dataverse_ops = dataverse_operations.DataverseOperations(trr177_connection)
+    dataset_ops = dataset_operations.DatasetOperations(trr177_connection)
+    file_ops = file_operations.FileOperations(trr177_connection)
+    user_ops = user_operations.UserOperations(trr177_connection)
     
-    #r1 = ops.count_file_by_file_content_type('application/matlab-mat')
-    #r2 = ops.count_all_files_by_file_content_type()
-    #r3 = ops.get_all_dataset_filecount()
-    #r4 = ops.count_datasets_by_filecount(1)
-    #r5 = ops.count_datasets_by_keyword('Titan')
-    #r6 = ops.get_all_dataverse_datasetcount()
-    #r7 = ops.get_dataset_size()
-    #r8 = ops.get_dataverse_size()
-    #r9 = ops.count_all_users()
-    #r10 = ops.count_users_per_role()
-    r11 = ops.count_users_per_affiliation()
-    
-    #print(r1)
-    #print(r2)
-    #print(r3)
-    #print(r4)
-    #print(r5)
-    #print(r6)
-    #print(r7)
-    #print(r8)
-    #print(r9)
-    #print(r10)
-    print(r11)
+    #Dataverse
+    #r11 = dataverse_ops.get_dataverse_ids()
+
+    #print('1all: ' + str(len(r11)) + " : " + str(r11))
+
+    #Dataset
+    #r21 = dataset_ops.get_dataset_ids()
+    #r22 = dataset_ops.get_dataset_ids('p')
+    #r23 = dataset_ops.get_dataset_ids('d')
+    #r24 = dataset_ops.get_dataset_total_views()
+    r25 = dataset_ops.get_dataset_total_views('p')
+    #r26 = dataset_ops.get_dataset_total_views('d')
+    #r27 = dataset_ops.get_dataset_total_unique_views()
+    r28 = dataset_ops.get_dataset_total_unique_views('p')
+    #r29 = dataset_ops.get_dataset_total_unique_views('d')
+    r211 = dataset_ops.get_dataset_total_downloads('p')
+    r212 = dataset_ops.get_dataset_total_unique_downloads('p')
+    r213 = dataset_ops.get_dataset_total_citations('p')
+
+
+    #print('2all: ' + str(len(r21)) + " : " + str(r21))
+    #print('2pub: ' + str(len(r22)) + " : " + str(r22))
+    #print('2dra: ' + str(len(r23)) + " : " + str(r23))
+    #print('tvall: ' + str(len(r24)) + " : " + str(r24))
+    print('tvpub: ' + str(len(r25)) + " : " + str(r25))
+    #print('tvdra: ' + str(len(r26)) + " : " + str(r26))
+    #print('tuvall: ' + str(len(r27)) + " : " + str(r27))
+    print('tuvpub: ' + str(len(r28)) + " : " + str(r28))
+    #print('tuvdra: ' + str(len(r29)) + " : " + str(r29))
+    print('tdpub: ' + str(len(r211)) + " : " + str(r211))
+    print('tudpub: ' + str(len(r212)) + " : " + str(r212))
+    print('tcpub: ' + str(len(r213)) + " : " + str(r213))
 
 
 if __name__ == '__main__':

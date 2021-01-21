@@ -49,7 +49,11 @@ class DataverseOperationsTest(unittest.TestCase):
         
     def test_get_size_dataverse(self):
         count = self.dataverse_ops.get_dataverse_size()
-        self.assertIs(type(count), dict, 'Must return a dict')  
+        self.assertIs(type(count), dict, 'Must return a dict')
+
+    def test_get_dataverse_ids(self):
+        count = self.dataverse_ops.get_dataverse_ids()
+        self.assertIs(type(count), list, 'Must return a list')
         
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

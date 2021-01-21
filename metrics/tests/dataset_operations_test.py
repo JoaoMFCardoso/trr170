@@ -40,7 +40,7 @@ class DatasetOperationsTest(unittest.TestCase):
         self.assertIs(type(count), int, 'Must return an int')    
     
     def test_get_dataset_ids(self):
-        count = self.dataset_ops.get_dataset_IDs()
+        count = self.dataset_ops.get_dataset_ids('')
         self.assertIs(type(count), list, 'Must return an List')    
     
     def test_count_datasets_by_subject_to_month(self):
@@ -73,6 +73,26 @@ class DatasetOperationsTest(unittest.TestCase):
           
     def test_get_dataset_distributors(self):
         count = self.dataset_ops.get_dataset_distributors()
+        self.assertIs(type(count), dict, 'Must return a dict')
+
+    def test_get_dataset_total_views(self):
+        count = self.dataset_ops.get_dataset_total_views()
+        self.assertIs(type(count), dict, 'Must return a dict')
+
+    def test_get_dataset_total_unique_views(self):
+        count = self.dataset_ops.get_dataset_total_unique_views()
+        self.assertIs(type(count), dict, 'Must return a dict')
+
+    def test_get_dataset_total_downloads(self):
+        count = self.dataset_ops.get_dataset_total_downloads()
+        self.assertIs(type(count), dict, 'Must return a dict')
+
+    def test_get_dataset_total_unique_downloads(self):
+        count = self.dataset_ops.get_dataset_total_unique_downloads()
+        self.assertIs(type(count), dict, 'Must return a dict')
+
+    def test_get_dataset_total_citations(self):
+        count = self.dataset_ops.get_dataset_total_citations()
         self.assertIs(type(count), dict, 'Must return a dict')
     
 if __name__ == "__main__":

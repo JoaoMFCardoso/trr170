@@ -3,6 +3,7 @@ Created on 18 Jan 2021
 
 @author: Joao M. F. Cardoso
 """
+
 from metrics.connection import dvconnection
 import json
 
@@ -27,7 +28,8 @@ class DatasetOperations:
     #    object: A dataset metadata object
     # Output:
     #    item: A metadata field item or None
-    def get_metadata_field_item(self, typeName, metadata_object) -> object:
+    @staticmethod
+    def get_metadata_field_item(typeName, metadata_object) -> object:
         # Runs fields to find the correct one
         for field in metadata_object['data']['citation']['fields']:
             if field['typeName'] == typeName:
@@ -35,39 +37,95 @@ class DatasetOperations:
 
         return None
 
-# ==============================================================================================================================================
-    # Dataset specific methods
-
-    # Get all Dataset IDs
-    #    Gets all of the Dataset Persistent IDs.
+    # Get the flag value
+    #    Gets the correct flag value based on its input
     # Input:
+    #    flag: A get_dataset_ids flag
     # Output:
-    #    ids: A list with all of the Dataset persistent IDs.
-    def get_dataset_IDs(self):
+    #    value: RELEASED if flag is p, DRAFT if flag is d.
+    @staticmethod
+    def get_flag_value(flag) -> str:
+        return {
+            'p': 'RELEASED',
+            'd': 'DRAFT'
+        }.get(flag, '')
+
+    # This method is private.
+    # Get Make Data Count Metric
+    # Input:
+    #   metric: The metric to be retrieved.
+    #   flag: The flag to be searched
+    # Output:
+    #   dictionary: A dictionary containing the dataset persistent ids as key and the metric as value.
+    def __get_make_data_count_metric(self, metric, flag) -> dict:
         # Connect to the Dataverse API
         dv_api = self.dv_connection.connect()
 
         # Declare all variables
+        dictionary = {}
+        dataset_ids = self.get_dataset_ids(flag)
+
+        # Run the Dataset IDs array
+        for dataset_id in dataset_ids:
+            # Create the request
+            query_str = '/datasets/:persistentId/makeDataCount/' + metric + '?'
+            params = {'persistentId': str(dataset_id)}
+            request = dv_api.get_request(query_str, params=params, auth=True)
+
+            # JSON response
+            objects = json.loads(request.content.decode('utf-8', 'ignore'))
+
+            # Fill dictionary
+            total_views = 0
+            if dictionary.get(dataset_id) is None and objects['status'] == 'OK' and metric in objects['data']:
+                total_views = objects['data'][metric]
+
+            dictionary[dataset_id] = total_views
+
+        return dictionary
+
+    # ==============================================================================================================================================
+    # Dataset specific methods
+
+    # Get Dataset IDs
+    #    Gets the Dataset Persistent IDs in accordance to a provided filter.
+    # Input:
+    #    flag: A filter indicating the type of dataset id to be gathered.
+    #       No Value (default):  Returns all of the existing Dataset ids.
+    #       p: Returns published dataset ids.
+    #       d: Returns draft dataset ids.
+    # Output:
+    #    ids: A list with all of the Dataset persistent IDs.
+    def get_dataset_ids(self, flag=''):
+        # Connect to the Dataverse API
+        dv_api = self.dv_connection.connect()
+
+        #  Gets the correct flag value
+        flag = self.get_flag_value(flag)
+
+        #  Declare all variables
         start_page = 0
-        total_results = ''
         condition = True
         ids = []
 
         # Loop to compensate for the limitation in showing results
-        while (condition):
+        while condition:
 
             # Create the request
             query_str = '/search?q=*'
             params = {'start': str(start_page), 'type': 'dataset'}
-            request = dv_api.get_request(query_str, params=params)
+            request = dv_api.get_request(query_str, params=params, auth=True)
 
             # JSON response
             objects = json.loads(request.content.decode('utf-8', 'ignore'))
 
             # Filter by keyword
             for dataset in objects['data']['items']:
-                if (dataset['global_id'] not in ids):
+                if dataset['global_id'] not in ids and dataset['versionState'] == flag:
                     ids.append(dataset['global_id'])
+                else:
+                    if flag == '':
+                        ids.append(dataset['global_id'])
 
             # Update start_page and total_results to cover for the limitation in showing results
             start_page = start_page + self.rows
@@ -77,7 +135,8 @@ class DatasetOperations:
         return ids
 
     # Count Dataset By Subject to Month
-    #    Returns a count of datasets filtered by subject, and up to a specified month $YYYY-DD in YYYY-MM format (e.g. 2018-01):
+    #    Returns a count of datasets filtered by subject, and up to a specified
+    #   month $YYYY-DD in YYYY-MM format (e.g. 2018-01):
     # Input:
     #    subject: A subject, e.g. Earth and Environmental Sciences
     #    year: YYYY, e.g. 2020
@@ -97,7 +156,7 @@ class DatasetOperations:
 
         # Filter by subject
         for dv_object in objects['data']:
-            if (dv_object['subject'] == subject):
+            if dv_object['subject'] == subject:
                 count = dv_object['count']
                 return count
 
@@ -115,12 +174,11 @@ class DatasetOperations:
 
         # Declare all variables
         start_page = 0
-        total_results = ''
         condition = True
         count = 0
 
         # Loop to compensate for the limitation in showing results
-        while (condition):
+        while condition:
 
             # Create the request
             query_str = '/search?q=*'
@@ -133,7 +191,7 @@ class DatasetOperations:
             # Filter by keyword
             for dataset in objects['data']['items']:
                 for dtkey in dataset['keywords']:
-                    if (dtkey == keyword):
+                    if dtkey == keyword:
                         count += 1
 
             # Update start_page and total_results to cover for the limitation in showing results
@@ -144,7 +202,8 @@ class DatasetOperations:
         return count
 
     # Count Datasets By filecount
-    #    Returns a count of datasets that have an equal or superior number of files, according to a provided file number.
+    #    Returns a count of datasets that have an equal or superior number of files,
+    #    according to a provided file number.
     # Input:
     #    filecount: A given number of files to be used for comparison
     # Output:
@@ -155,12 +214,11 @@ class DatasetOperations:
 
         # Declare all variables
         start_page = 0
-        total_results = ''
         condition = True
         count = 0
 
         # Loop to compensate for the limitation in showing results
-        while (condition):
+        while condition:
 
             # Create the request
             query_str = '/search?q=*'
@@ -172,7 +230,7 @@ class DatasetOperations:
 
             # Filter by filecount
             for dataset in objects['data']['items']:
-                if (dataset['fileCount'] >= int(filecount)):
+                if dataset['fileCount'] >= int(filecount):
                     count += 1
 
             # Update start_page and total_results to cover for the limitation in showing results
@@ -193,12 +251,11 @@ class DatasetOperations:
 
         # Declare all variables
         start_page = 0
-        total_results = ''
         condition = True
         dataset_filecount = {}
 
         # Loop to compensate for the limitation in showing results
-        while (condition):
+        while condition:
 
             # Create the request
             query_str = '/search?q=*'
@@ -230,8 +287,6 @@ class DatasetOperations:
 
         # Declare all variables
         start_page = 0
-        total_results = ''
-        size_bytes = 0
         condition = True
         dictionary = {}
 
@@ -264,14 +319,15 @@ class DatasetOperations:
     #    Gets the number of versions associated with each existing Dataset
     # Input:
     # Output:
-    #    dictionary: A dictionary containing the Dataset identifiers as keys, and the number of existing versions as value
+    #    dictionary: A dictionary containing the Dataset identifiers as keys,
+    #    and the number of existing versions as value
     def count_dataset_versions(self):
         # Connect to the Dataverse API
         dv_api = self.dv_connection.connect()
 
         # Declare all variables
         dictionary = {}
-        dataset_ids = self.get_dataset_IDs()
+        dataset_ids = self.get_dataset_ids()
 
         # Run the Dataset IDs array
         for dataset_id in dataset_ids:
@@ -294,14 +350,15 @@ class DatasetOperations:
     #    Gets the number of draft versions associated with each existing Dataset
     # Input:
     # Output:
-    #    dictionary: A dictionary containing the Dataset identifiers as keys, and the number of existing draft versions as value
+    #    dictionary: A dictionary containing the Dataset identifiers as keys,
+    #    and the number of existing draft versions as value
     def count_dataset_draft_versions(self):
         # Connect to the Dataverse API
         dv_api = self.dv_connection.connect()
 
         # Declare all variables
         dictionary = {}
-        dataset_ids = self.get_dataset_IDs()
+        dataset_ids = self.get_dataset_ids()
 
         # Run the Dataset IDs array
         for dataset_id in dataset_ids:
@@ -319,19 +376,19 @@ class DatasetOperations:
 
         return dictionary
 
-        # Get Dataset Distributors
-
+    # Get Dataset Distributors
     #    Gets the name and affiliation of the distributors of each Dataset
     # Input:
     # Output:
-    #    dictionary: A dictionary containing the Dataset identifiers as keys, and a list containing the name and affiliation of the distributors as value
+    #    dictionary: A dictionary containing the Dataset identifiers as keys,
+    #    and a list containing the name and affiliation of the distributors as value
     def get_dataset_distributors(self):
         # Connect to the Dataverse API
         dv_api = self.dv_connection.connect()
 
         # Declare all variables
         dictionary = {}
-        dataset_ids = self.get_dataset_IDs()
+        dataset_ids = self.get_dataset_ids()
 
         # Run the Dataset IDs array
         for dataset_id in dataset_ids:
@@ -358,5 +415,77 @@ class DatasetOperations:
                         distributor.append([distributorName, distributorAffiliation])
 
                 dictionary[dataset_id] = distributor
+
+        return dictionary
+
+    # Get Dataset Total Views
+    #    Gets the total views of all Datasets
+    # Input:
+    #    flag: A filter indicating the type of dataset id to be gathered.
+    #       No Value (default):  Returns total views for all of the existing datasets.
+    #       p: Returns total views for published datasets.
+    #       d: Returns total views for draft datasets.
+    # Output:
+    #    dictionary: A dictionary containing the Dataset identifiers as keys, and its total views as value
+    def get_dataset_total_views(self, flag=''):
+
+        dictionary = self.__get_make_data_count_metric('viewsTotal', flag)
+
+        return dictionary
+
+    # Get Dataset Total Views
+    #    Gets the total views of all Datasets
+    # Input:
+    #    flag: A filter indicating the type of dataset id to be gathered.
+    #       No Value (default):  Returns total views for all of the existing datasets.
+    #       p: Returns total views for published datasets.
+    #       d: Returns total views for draft datasets.
+    # Output:
+    #    dictionary: A dictionary containing the Dataset identifiers as keys, and its total unique views as value
+    def get_dataset_total_unique_views(self, flag=''):
+
+        dictionary = self.__get_make_data_count_metric('viewsUnique', flag)
+
+        return dictionary
+
+    # Get Dataset Total Downloads
+    #    Gets the total Downloads of all Datasets
+    # Input:
+    #    flag: A filter indicating the type of dataset id to be gathered.
+    #       No Value (default):  Returns total views for all of the existing datasets.
+    #       p: Returns total views for published datasets.
+    #       d: Returns total views for draft datasets.
+    # Output:
+    #    dictionary: A dictionary containing the Dataset identifiers as keys, and its total downloads as value
+    def get_dataset_total_downloads(self, flag=''):
+        dictionary = self.__get_make_data_count_metric('downloadsTotal', flag)
+
+        return dictionary
+
+    # Get Dataset Total Unique Downloads
+    #    Gets the total views of all Datasets
+    # Input:
+    #    flag: A filter indicating the type of dataset id to be gathered.
+    #       No Value (default):  Returns total views for all of the existing datasets.
+    #       p: Returns total views for published datasets.
+    #       d: Returns total views for draft datasets.
+    # Output:
+    #    dictionary: A dictionary containing the Dataset identifiers as keys, and its total unique downloads as value
+    def get_dataset_total_unique_downloads(self, flag=''):
+        dictionary = self.__get_make_data_count_metric('downloadsUnique', flag)
+
+        return dictionary
+
+    # Get Dataset Total Citations
+    #    Gets the total citations of all Datasets
+    # Input:
+    #    flag: A filter indicating the type of dataset id to be gathered.
+    #       No Value (default):  Returns total views for all of the existing datasets.
+    #       p: Returns total views for published datasets.
+    #       d: Returns total views for draft datasets.
+    # Output:
+    #    dictionary: A dictionary containing the Dataset identifiers as keys, and its total citations as value
+    def get_dataset_total_citations(self, flag=''):
+        dictionary = self.__get_make_data_count_metric('citations', flag)
 
         return dictionary
