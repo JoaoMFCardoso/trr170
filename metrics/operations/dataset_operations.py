@@ -136,7 +136,7 @@ class DatasetOperations:
 
     # Count Dataset By Subject to Month
     #    Returns a count of datasets filtered by subject, and up to a specified
-    #   month $YYYY-DD in YYYY-MM format (e.g. 2018-01):
+    #   month $YYYY-DD in YYYY-MM format (e.g. 2018-01).
     # Input:
     #    subject: A subject, e.g. Earth and Environmental Sciences
     #    year: YYYY, e.g. 2020
@@ -316,7 +316,7 @@ class DatasetOperations:
         return dictionary
 
     # Count Dataset Versions
-    #    Gets the number of versions associated with each existing Dataset
+    #    Counts the number of versions associated with each existing Dataset
     # Input:
     # Output:
     #    dictionary: A dictionary containing the Dataset identifiers as keys,
@@ -345,8 +345,7 @@ class DatasetOperations:
 
         return dictionary
 
-        # Count Dataset Draft Versions
-
+    # Count Dataset Draft Versions
     #    Gets the number of draft versions associated with each existing Dataset
     # Input:
     # Output:
