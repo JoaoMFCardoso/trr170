@@ -1,5 +1,23 @@
 # Dataverse Metrics Harvester
 
+## Index
+
+- [Introduction](#introduction)
+- [Requirements](#requirements)
+- [Structure](#structure)
+- [Installation](#installation)
+    - [Get the code](#get-the-code)
+    - [Configuration](#configuration)
+- [Usage](#usage)
+- [Operations](#operations)
+    - [General Operations](#general-operations)
+    - [Dataverse Operations](#dataverse-operations)
+    - [Dataset Operations](#dataset-operations)
+    - [File Operations](#file-operations)
+    - [User Operations](#user-operations)
+- [To Do](#to-do)
+
+
 ## Introduction
 
 The Dataverse Metrics Harvester allows for the extraction of multiple metrics from a Dataverse installation. 
@@ -16,7 +34,7 @@ It uses the [Python] programming language and its testing module was developed u
 
 The Dataverse Harvester is structured according to 4 python packages.
 
-```bash
+```
 ├── main - Package holding the cron scripts
 ├── connection - Establishes the connections to Datavese installations.
 ├── operations - Operations to harvest metrics from Dataverse installations.
