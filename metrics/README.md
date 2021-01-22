@@ -58,26 +58,27 @@ On a Red Hat or CentOS system, you might drop a file like [update_metrics.cron](
 
 ## Operations
 
-  - [General Operations](###general-operations)
-  - [Dataverse Operations](###dataverse-operations)
-  - [Dataset Operations](###dataset-operations)
-  - [File Operations](###file-operations)
-  - [User Operations](###user-operations)
+- [General Operations](#general-operations)
+- [Dataverse Operations](#dataverse-operations)
+- [Dataset Operations](#dataset-operations)
+- [File Operations](#file-operations)
+- [User Operations](#user-operations)
 
-
-###General Operations
+___
+___
+### General Operations
 
 General operations focuses on operations that apply to all object types.
 
 #### List of operations
   
-  - [Count All](###Count-All)
-  - [Count to Month](###Count-to-Month)
-  - [Count By Days](###Count-By-Days)
-  - [Count By Subject](###Count-By-Subject)
+- [Count All](#count-all)
+- [Count to Month](#count-to-month)
+- [Count By Days](#count-by-days)
+- [Count By Subject](#count-by-subject)
 
 ---
-###Count All
+#### Count All
 
 Returns a count of a provided object over all-time.
 
@@ -91,7 +92,7 @@ Returns a count of a provided object over all-time.
     count_all('dataverse')
 
 ---
-###Count to Month
+#### Count to Month
 
 Returns a count of provided objects in dataverse up to a specified month YYYY DD in YYYY-MM format (e.g. 2020-12).
 
@@ -107,7 +108,7 @@ Returns a count of provided objects in dataverse up to a specified month YYYY DD
     count_to_month('dataverse', '12', '2020')
 
 ---
-###Count By Days
+#### Count By Days
 
 Returns a count of provided objects in dataverse for the past $days (e.g. 30).
 
@@ -122,7 +123,7 @@ Returns a count of provided objects in dataverse for the past $days (e.g. 30).
     count_by_days('dataverse', '20')
 
 ---
-###Count By Subject
+#### Count By Subject
 
 Returns a count of provided objects in dataverse for the provided subject.
 
@@ -136,16 +137,18 @@ Returns a count of provided objects in dataverse for the provided subject.
     
     count_by_subject('Earth and Environmental Sciences')
 
+___
+___
 ###Dataverse Operations
 
 Dataverse operations focuses on operations that solely apply to Dataverse objects types.
 
 #### List of operations
   
-  - [Get Dataverse IDs](#####get-dataverse-ids)
-  - [Get All Dataverse Datasetcount](#####get-all-dataverse-datasetcount)
-  - [Get Dataverse Size in Bytes](#####get-dataverse-size-in-bytes)
-  - [Count Dataverse by Category](#####count-dataverse-by-category)
+- [Get Dataverse IDs](#get-dataverse-ids)
+- [Get All Dataverse Datasetcount](#get-all-dataverse-datasetcount)
+- [Get Dataverse Size in Bytes](#get-dataverse-size-in-bytes)
+- [Count Dataverse by Category](#count-dataverse-by-category)
 
 ---
 ####Get Dataverse IDs
@@ -203,24 +206,28 @@ Returns a count of Dataverses in dataverse for the provided category.
     
     count_dataverse_by_category('Organization')
 
+___
+___
 ###Dataset Operations
 
 Dataset operations focuses on operations that solely apply to Dataset objects types.
 
 #### List of operations
   
-  - [Get Dataset IDs](#####Get-Dataset-IDs)
-  - [Get All Dataset File count](#####Get-All-Dataset-File-count)
-  - [Get Dataverse Size in Bytes](#####Get-Dataverse-Size-in-Bytes)
-  - [Count Dataverse by Category](#####Count-Dataverse-by-Category)
-  - [Get Dataset IDs](#####Get-Dataset-IDs)
-  - [Get All Dataverse Datasetcount](#####Get-All-Dataverse-Datasetcount)
-  - [Get Dataverse Size in Bytes](#####Get-Dataverse-Size-in-Bytes)
-  - [Count Dataverse by Category](#####Count-Dataverse-by-Category)
-  - [Get Dataset IDs](#####Get-Dataset-IDs)
-  - [Get All Dataverse Datasetcount](#####Get-All-Dataverse-Datasetcount)
-  - [Get Dataverse Size in Bytes](#####Get-Dataverse-Size-in-Bytes)
-  - [Count Dataverse by Category](#####Count-Dataverse-by-Category)
+- [Get Dataset IDs](#get-dataset-ids)
+- [Get All Dataset File count](#get-all-dataset-file-count)
+- [Get Dataset Size in Bytes](#get-dataset-size-in-bytes)
+- [Get Dataset Distributors](#get-dataset-distributors)
+- [Get Dataset Total Views](#get-dataset-total-views)
+- [Get Dataset Total Unique Views](#get-dataset-total-unique-views)
+- [Get Dataset Total Unique Downloads](#get-dataset-total-downloads)
+- [Get Dataset Total Unique Downloads](#get-dataset-total-unique-downloads)
+- [Get Dataset Total Citations](#get-dataset-total-citations)
+- [Count Dataset by Subject to Month](#count-dataset-by-subject-to-month)
+- [Count Datasets by Keyword](#count-datasets-by-keyword)
+- [Count Datasets by File count](#count-datasets-by-file-count)
+- [Count Dataset Versions](#count-dataset-versions)
+- [Count Dataset Draft Versions](#count-dataset-draft-versions)
 
 ---
 ####Get Dataset IDs
@@ -256,7 +263,7 @@ Gets the number of files for each dataset.
     get_all_dataset_filecount()
 
 ---
-*Get Dataset Size in Bytes*
+####Get Dataset Size in Bytes
 
 Gets the size in bytes of each Dataset.
 
@@ -270,7 +277,7 @@ Gets the size in bytes of each Dataset.
     get_dataset_size()
 
 ---
-*Get Dataset Distributors*
+####Get Dataset Distributors
 
 Gets the name and affiliation of the distributors of each Dataset
 
@@ -284,7 +291,7 @@ Gets the name and affiliation of the distributors of each Dataset
     get_dataset_distributors()
 
 ---
-*Get Dataset Total Views*
+####Get Dataset Total Views
 
 Gets the total views of all Datasets
 
@@ -301,7 +308,7 @@ Gets the total views of all Datasets
     get_dataset_total_views()
 
 ---
-*Get Dataset Total Unique Views*
+####Get Dataset Total Unique Views
 
 Gets the total unique views of all Datasets
 
@@ -318,7 +325,7 @@ Gets the total unique views of all Datasets
     get_dataset_total_unique_views()
 
 ---
-*Get Dataset Total Downloads*
+####Get Dataset Total Downloads
 
 Gets the total downloads of all Datasets
 
@@ -335,7 +342,7 @@ Gets the total downloads of all Datasets
     get_dataset_total_downloads()
 
 ---
-*Get Dataset Total Unique Downloads*
+####Get Dataset Total Unique Downloads
 
 Gets the total unique downloads of all Datasets
 
@@ -352,7 +359,7 @@ Gets the total unique downloads of all Datasets
     get_dataset_total_unique_downloads()
 
 ---
-*Get Dataset Total Citations*
+####Get Dataset Total Citations
 
 Gets the total citations of all Datasets
 
@@ -369,7 +376,7 @@ Gets the total citations of all Datasets
     get_dataset_total_citations()
 
 ---
-*Count Dataset by Subject to Month*
+####Count Dataset by Subject to Month
 
 Returns a count of datasets filtered by subject, and up to a specified month $YYYY-DD in YYYY-MM format (e.g. 2018-01).
 
@@ -385,7 +392,7 @@ Returns a count of datasets filtered by subject, and up to a specified month $YY
     count_datasets_by_subject_to_month('Earth and Environmental Sciences', '2020', '12')
 
 ---
-*Count Datasets by keyword*
+####Count Datasets by keyword
 
 Returns a count of datasets where a given keyword is present.
 
@@ -399,7 +406,7 @@ Returns a count of datasets where a given keyword is present.
     count_datasets_by_keyword('Titan')
 
 ---
-*Count Datasets by File count*
+####Count Datasets by File count
 
 Returns a count of datasets that have an equal or superior number of files, according to a provided file number.
 
@@ -413,7 +420,7 @@ Returns a count of datasets that have an equal or superior number of files, acco
     count_datasets_by_filecount('5')
 
 ---
-*Count Dataset Versions*
+####Count Dataset Versions
 
 Counts the number of versions associated with each existing Dataset
 
@@ -427,7 +434,7 @@ Counts the number of versions associated with each existing Dataset
     count_dataset_versions()
 
 ---
-*Count Dataset Draft Versions*
+####Count Dataset Draft Versions
 
 Counts the number of draft versions associated with each existing Dataset
 
@@ -439,6 +446,20 @@ Counts the number of draft versions associated with each existing Dataset
 **Call Example**
     
     count_dataset_draft_versions()
+
+___
+___
+### File Operations
+
+Dataverse operations focuses on operations that solely apply to Dataverse objects types.
+
+#### List of operations
+
+### User Operations
+
+Dataverse operations focuses on operations that solely apply to Dataverse objects types.
+
+#### List of operations
 
 ## To Do
 
