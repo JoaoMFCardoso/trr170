@@ -139,7 +139,7 @@ Returns a count of provided objects in dataverse for the provided subject.
 
 ___
 ___
-###Dataverse Operations
+### Dataverse Operations
 
 Dataverse operations focuses on operations that solely apply to Dataverse objects types.
 
@@ -151,7 +151,7 @@ Dataverse operations focuses on operations that solely apply to Dataverse object
 - [Count Dataverse by Category](#count-dataverse-by-category)
 
 ---
-####Get Dataverse IDs
+#### Get Dataverse IDs
 
 Gets all the Dataverse Persistent IDs.
 
@@ -165,7 +165,7 @@ Gets all the Dataverse Persistent IDs.
     get_dataverse_ids()
 
 ---
-####Get All Dataverse Datasetcount
+#### Get All Dataverse Datasetcount
 
 Gets the number of datasets associated with each dataverse.
 
@@ -179,7 +179,7 @@ Gets the number of datasets associated with each dataverse.
     get_all_dataverse_datasetcount()
 
 ---
-####Get Dataverse Size in Bytes
+#### Get Dataverse Size in Bytes
 
 Gets the size in bytes of each Dataverse.
 
@@ -193,7 +193,7 @@ Gets the size in bytes of each Dataverse.
     get_dataverse_size()
 
 ---
-####Count Dataverse by Category
+#### Count Dataverse by Category
 
 Returns a count of Dataverses in dataverse for the provided category.
 
@@ -208,7 +208,7 @@ Returns a count of Dataverses in dataverse for the provided category.
 
 ___
 ___
-###Dataset Operations
+### Dataset Operations
 
 Dataset operations focuses on operations that solely apply to Dataset objects types.
 
@@ -230,7 +230,7 @@ Dataset operations focuses on operations that solely apply to Dataset objects ty
 - [Count Dataset Draft Versions](#count-dataset-draft-versions)
 
 ---
-####Get Dataset IDs
+#### Get Dataset IDs
 
 Gets the Dataset Persistent IDs in accordance to a provided filter.
 
@@ -249,7 +249,7 @@ Gets the Dataset Persistent IDs in accordance to a provided filter.
     get_dataset_ids('d')
 
 ---
-####Get All Dataset File count
+#### Get All Dataset File count
 
 Gets the number of files for each dataset.
 
@@ -263,7 +263,7 @@ Gets the number of files for each dataset.
     get_all_dataset_filecount()
 
 ---
-####Get Dataset Size in Bytes
+#### Get Dataset Size in Bytes
 
 Gets the size in bytes of each Dataset.
 
@@ -277,7 +277,7 @@ Gets the size in bytes of each Dataset.
     get_dataset_size()
 
 ---
-####Get Dataset Distributors
+#### Get Dataset Distributors
 
 Gets the name and affiliation of the distributors of each Dataset
 
@@ -291,7 +291,7 @@ Gets the name and affiliation of the distributors of each Dataset
     get_dataset_distributors()
 
 ---
-####Get Dataset Total Views
+#### Get Dataset Total Views
 
 Gets the total views of all Datasets
 
@@ -308,7 +308,7 @@ Gets the total views of all Datasets
     get_dataset_total_views()
 
 ---
-####Get Dataset Total Unique Views
+#### Get Dataset Total Unique Views
 
 Gets the total unique views of all Datasets
 
@@ -325,7 +325,7 @@ Gets the total unique views of all Datasets
     get_dataset_total_unique_views()
 
 ---
-####Get Dataset Total Downloads
+#### Get Dataset Total Downloads
 
 Gets the total downloads of all Datasets
 
@@ -342,7 +342,7 @@ Gets the total downloads of all Datasets
     get_dataset_total_downloads()
 
 ---
-####Get Dataset Total Unique Downloads
+#### Get Dataset Total Unique Downloads
 
 Gets the total unique downloads of all Datasets
 
@@ -359,7 +359,7 @@ Gets the total unique downloads of all Datasets
     get_dataset_total_unique_downloads()
 
 ---
-####Get Dataset Total Citations
+#### Get Dataset Total Citations
 
 Gets the total citations of all Datasets
 
@@ -376,7 +376,7 @@ Gets the total citations of all Datasets
     get_dataset_total_citations()
 
 ---
-####Count Dataset by Subject to Month
+#### Count Dataset by Subject to Month
 
 Returns a count of datasets filtered by subject, and up to a specified month $YYYY-DD in YYYY-MM format (e.g. 2018-01).
 
@@ -392,7 +392,7 @@ Returns a count of datasets filtered by subject, and up to a specified month $YY
     count_datasets_by_subject_to_month('Earth and Environmental Sciences', '2020', '12')
 
 ---
-####Count Datasets by keyword
+#### Count Datasets by keyword
 
 Returns a count of datasets where a given keyword is present.
 
@@ -406,7 +406,7 @@ Returns a count of datasets where a given keyword is present.
     count_datasets_by_keyword('Titan')
 
 ---
-####Count Datasets by File count
+#### Count Datasets by File count
 
 Returns a count of datasets that have an equal or superior number of files, according to a provided file number.
 
@@ -420,7 +420,7 @@ Returns a count of datasets that have an equal or superior number of files, acco
     count_datasets_by_filecount('5')
 
 ---
-####Count Dataset Versions
+#### Count Dataset Versions
 
 Counts the number of versions associated with each existing Dataset
 
@@ -434,7 +434,7 @@ Counts the number of versions associated with each existing Dataset
     count_dataset_versions()
 
 ---
-####Count Dataset Draft Versions
+#### Count Dataset Draft Versions
 
 Counts the number of draft versions associated with each existing Dataset
 
@@ -451,15 +451,94 @@ ___
 ___
 ### File Operations
 
-Dataverse operations focuses on operations that solely apply to Dataverse objects types.
+File operations focuses on operations that solely apply to File objects types.
 
 #### List of operations
 
+- [Count Files by File Content Type](#count-files-by-file-content-type)
+- [Count All Files by File Content Type](#count-all-files-by-file-content-type)
+
+---
+#### Count Files by File Content Type
+
+Counts the number of files of a given file content type
+
+- Input:
+    - A given file content type, e.g., text/tab-separated-values.
+- Output: 
+    - The number of files of a given file content type.
+
+**Call Example**
+    
+    count_file_by_file_content_type('text/tab-separated-values')
+
+---
+#### Count All Files By File Content Type
+
+Counts the number of files per respective file content type.
+
+- Input:
+    - None.
+- Output: 
+    - A dictionary containing the file content types, and the number of files associated with each file content type.
+
+**Call Example**
+    
+    count_all_files_by_file_content_type()
+
+___
+___
 ### User Operations
 
-Dataverse operations focuses on operations that solely apply to Dataverse objects types.
+User operations focuses on operations that solely apply to user objects types.
 
 #### List of operations
+
+- [Count All Users](#count-all-users)
+- [Count Users Per Role](#count-users-per-role)
+- [Count Users Per Affiliation](#count-users-per-affiliation)
+
+---
+#### Count All Users
+
+Counts the total number of users
+
+- Input:
+    - None.
+- Output: 
+    - The total number of users.
+
+**Call Example**
+    
+    count_all_users()
+
+---
+#### Count Users Per Role
+
+Counts the total number of users per role.
+
+- Input:
+    - None.
+- Output: 
+    - A dictionary containing the role as key, and the number of users sharing that role as value.
+
+**Call Example**
+    
+    count_users_per_role()
+
+---
+#### Count Users Per Affiliation
+
+Counts the total number of users per affiliation.
+
+- Input:
+    - None.
+- Output: 
+    - A dictionary containing the affiliation as key, and the number of users sharing that affiliation as value.
+
+**Call Example**
+    
+    count_users_per_affiliation()
 
 ## To Do
 

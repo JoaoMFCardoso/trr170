@@ -21,7 +21,7 @@ class FileOperations:
     # File specific methods
 
     # Count files by file content type
-    #    Gets the number of files of a given file content type
+    #    Counts the number of files of a given file content type
     # Input:
     #    file_content_type: A given file content type, e.g., text/tab-separated-values
     # Output:
@@ -59,7 +59,7 @@ class FileOperations:
 
         return count
 
-    # Count Files By File Content Type
+    # Count All Files By File Content Type
     #    Counts the number of files per file content type
     # Input:
     # Output:

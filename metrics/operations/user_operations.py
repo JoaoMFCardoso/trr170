@@ -21,7 +21,7 @@ class UserOperations:
     # User specific methods
 
     # Count all users
-    #    Gets the total number of users
+    #    Counts the total number of users
     # Input:
     # Output:
     #    count: The total number of users
@@ -41,12 +41,11 @@ class UserOperations:
 
         return count
 
-        # Count Users Per Role
-
-    #    Gets the total number of users per role
+    # Count Users Per Role
+    #    Counts the total number of users per role.
     # Input:
     # Output:
-    #    dictionary: A dictionary containing the role as key and the number of users sharing that role as value
+    #    dictionary: A dictionary containing the role as key and the number of users sharing that role as value.
     def count_users_per_role(self):
         # Connect to the Dataverse API
         dv_api = self.dv_connection.connect()
@@ -88,10 +87,11 @@ class UserOperations:
         return dictionary
 
     # Count Users Per Affiliation
-    #    Gets the total number of users per affiliation
+    #    Counts the total number of users per affiliation.
     # Input:
     # Output:
-    #    dictionary: A dictionary containing the affiliation as key and the number of users sharing that affiliation as value
+    #    dictionary: A dictionary containing the affiliation as key and the number
+    #    of users sharing that affiliation as value.
     def count_users_per_affiliation(self):
         # Connect to the Dataverse API
         dv_api = self.dv_connection.connect()
