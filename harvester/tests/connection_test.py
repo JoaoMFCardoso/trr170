@@ -5,7 +5,7 @@ Created on 7 Jan 2021
 """
 import unittest
 import configparser
-from metrics.connection import dvconnection
+from harvester.connection import dvconnection
 
 
 class ConnectionTest(unittest.TestCase):

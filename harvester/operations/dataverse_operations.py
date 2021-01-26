@@ -3,8 +3,8 @@ Created on 18 Jan 2021
 
 @author: Joao M. F. Cardoso
 """
-from metrics.connection import dvconnection
-from metrics.operations import dataset_operations
+from harvester.connection import dvconnection
+from harvester.operations import dataset_operations
 import json
 
 
@@ -119,7 +119,7 @@ class DataverseOperations:
 
             # Fill the dictionary
             for dataset in objects['data']['items']:
-                if (dataverse_datasetcount.get(dataset['identifier_of_dataverse']) is None):
+                if dataverse_datasetcount.get(dataset['identifier_of_dataverse']) is None:
                     dataverse_datasetcount[dataset['identifier_of_dataverse']] = 1
                 else:
                     count = dataverse_datasetcount[dataset['identifier_of_dataverse']]

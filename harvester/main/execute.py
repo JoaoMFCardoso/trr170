@@ -3,12 +3,12 @@ Created on 10 Dec 2020
 
 @author: Joao M. F. Cardoso
 '''
-from metrics.connection import dvconnection
-from metrics.operations import general_operations
-from metrics.operations import dataset_operations
-from metrics.operations import dataverse_operations
-from metrics.operations import file_operations
-from metrics.operations import user_operations
+from harvester.connection import dvconnection
+from harvester.operations import general_operations
+from harvester.operations import dataset_operations
+from harvester.operations import dataverse_operations
+from harvester.operations import file_operations
+from harvester.operations import user_operations
 import configparser
 
 
@@ -44,11 +44,11 @@ def main():
     r25 = dataset_ops.get_dataset_total_views('p')
     #r26 = dataset_ops.get_dataset_total_views('d')
     #r27 = dataset_ops.get_dataset_total_unique_views()
-    r28 = dataset_ops.get_dataset_total_unique_views('p')
+    #r28 = dataset_ops.get_dataset_total_unique_views('p')
     #r29 = dataset_ops.get_dataset_total_unique_views('d')
-    r211 = dataset_ops.get_dataset_total_downloads('p')
-    r212 = dataset_ops.get_dataset_total_unique_downloads('p')
-    r213 = dataset_ops.get_dataset_total_citations('p')
+    #r211 = dataset_ops.get_dataset_total_downloads('p')
+    #r212 = dataset_ops.get_dataset_total_unique_downloads('p')
+    #r213 = dataset_ops.get_dataset_total_citations('p')
 
 
     #print('2all: ' + str(len(r21)) + " : " + str(r21))
@@ -58,11 +58,11 @@ def main():
     print('tvpub: ' + str(len(r25)) + " : " + str(r25))
     #print('tvdra: ' + str(len(r26)) + " : " + str(r26))
     #print('tuvall: ' + str(len(r27)) + " : " + str(r27))
-    print('tuvpub: ' + str(len(r28)) + " : " + str(r28))
+    #print('tuvpub: ' + str(len(r28)) + " : " + str(r28))
     #print('tuvdra: ' + str(len(r29)) + " : " + str(r29))
-    print('tdpub: ' + str(len(r211)) + " : " + str(r211))
-    print('tudpub: ' + str(len(r212)) + " : " + str(r212))
-    print('tcpub: ' + str(len(r213)) + " : " + str(r213))
+    #print('tdpub: ' + str(len(r211)) + " : " + str(r211))
+    #print('tudpub: ' + str(len(r212)) + " : " + str(r212))
+    #print('tcpub: ' + str(len(r213)) + " : " + str(r213))
 
 
 if __name__ == '__main__':

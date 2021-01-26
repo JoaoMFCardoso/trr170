@@ -3,7 +3,7 @@ Created on 18 Jan 2021
 
 @author: Joao M. F. Cardoso
 """
-from metrics.connection import dvconnection
+from harvester.connection import dvconnection
 import json
 
 

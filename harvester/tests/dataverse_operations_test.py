@@ -5,9 +5,9 @@ Created on 7 Jan 2021
 '''
 import unittest
 import configparser
-from metrics.connection import dvconnection
-from metrics.operations import general_operations
-from metrics.operations import dataverse_operations
+from harvester.connection import dvconnection
+from harvester.operations import general_operations
+from harvester.operations import dataverse_operations
 
 class DataverseOperationsTest(unittest.TestCase):
 
