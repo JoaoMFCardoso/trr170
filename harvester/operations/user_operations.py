@@ -3,7 +3,7 @@ Created on 18 Jan 2021
 
 @author: Joao M. F. Cardoso
 """
-from harvester.connection import dvconnection
+from harvester.connection import dataverse_connection
 import json
 
 
@@ -14,7 +14,7 @@ class UserOperations:
     rows = 10
 
     # Constructor
-    def __init__(self, connection: dvconnection):
+    def __init__(self, connection: dataverse_connection):
         self.dv_connection = connection
 
     # ==============================================================================================================================================

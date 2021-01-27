@@ -3,7 +3,8 @@ Created on 10 Dec 2020
 
 @author: Joao M. F. Cardoso
 '''
-from harvester.connection import dvconnection
+from harvester.connection import dataverse_connection
+from harvester.connection import database_connection
 from harvester.operations import general_operations
 from harvester.operations import dataset_operations
 from harvester.operations import dataverse_operations
@@ -23,7 +24,7 @@ def main():
     base_url = config['TRR170_DV']['base_url']
     api_key = config['TRR170_DV']['api_key']
     
-    trr177_connection = dvconnection.Connection(base_url, api_key)
+    trr177_connection = dataverse_connection.Connection(base_url, api_key)
    
     gen_ops = general_operations.GeneralOperations(trr177_connection)
     dataverse_ops = dataverse_operations.DataverseOperations(trr177_connection)
@@ -31,6 +32,17 @@ def main():
     file_ops = file_operations.FileOperations(trr177_connection)
     user_ops = user_operations.UserOperations(trr177_connection)
     
+    #Database
+
+    host = config['TEST_DB']['host']
+    port = config['TEST_DB']['port']
+    database = config['TEST_DB']['database']
+    user = config['TEST_DB']['user']
+    password = config['TEST_DB']['password']
+
+    db_connection = database_connection.Connection(host, port, database, user, password)
+    db_connection.connect()
+
     #Dataverse
     #r11 = dataverse_ops.get_dataverse_ids()
 
@@ -41,7 +53,7 @@ def main():
     #r22 = dataset_ops.get_dataset_ids('p')
     #r23 = dataset_ops.get_dataset_ids('d')
     #r24 = dataset_ops.get_dataset_total_views()
-    r25 = dataset_ops.get_dataset_total_views('p')
+    #r25 = dataset_ops.get_dataset_total_views('p')
     #r26 = dataset_ops.get_dataset_total_views('d')
     #r27 = dataset_ops.get_dataset_total_unique_views()
     #r28 = dataset_ops.get_dataset_total_unique_views('p')
@@ -55,7 +67,7 @@ def main():
     #print('2pub: ' + str(len(r22)) + " : " + str(r22))
     #print('2dra: ' + str(len(r23)) + " : " + str(r23))
     #print('tvall: ' + str(len(r24)) + " : " + str(r24))
-    print('tvpub: ' + str(len(r25)) + " : " + str(r25))
+    #print('tvpub: ' + str(len(r25)) + " : " + str(r25))
     #print('tvdra: ' + str(len(r26)) + " : " + str(r26))
     #print('tuvall: ' + str(len(r27)) + " : " + str(r27))
     #print('tuvpub: ' + str(len(r28)) + " : " + str(r28))

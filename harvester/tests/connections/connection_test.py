@@ -5,7 +5,7 @@ Created on 7 Jan 2021
 """
 import unittest
 import configparser
-from harvester.connection import dvconnection
+from harvester.connection import dataverse_connection
 
 
 class ConnectionTest(unittest.TestCase):
@@ -18,7 +18,7 @@ class ConnectionTest(unittest.TestCase):
         base_url = config['TRR170_DV']['base_url']
         api_key = config['TRR170_DV']['api_key']
 
-        trr177_connection = dvconnection.Connection(base_url, api_key)
+        trr177_connection = dataverse_connection.Connection(base_url, api_key)
         trr177_api = trr177_connection.connect()
 
         self.assertEqual(trr177_api.status, 'OK', 'Connection with the TRR170 Dataverse establishing correctly')

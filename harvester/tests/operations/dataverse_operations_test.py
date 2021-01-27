@@ -5,7 +5,7 @@ Created on 7 Jan 2021
 '''
 import unittest
 import configparser
-from harvester.connection import dvconnection
+from harvester.connection import dataverse_connection
 from harvester.operations import general_operations
 from harvester.operations import dataverse_operations
 
@@ -18,7 +18,7 @@ class DataverseOperationsTest(unittest.TestCase):
     base_url = config['TRR170_DV']['base_url']
     api_key = config['TRR170_DV']['api_key']
     
-    trr177_connection = dvconnection.Connection(base_url, api_key)
+    trr177_connection = dataverse_connection.Connection(base_url, api_key)
     
     ops = general_operations.GeneralOperations(trr177_connection)
     dataverse_ops = dataverse_operations.DataverseOperations(trr177_connection)
