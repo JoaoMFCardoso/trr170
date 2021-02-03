@@ -240,6 +240,55 @@ class DatasetOperations:
 
         return count
 
+    # Get Dataset Keywords
+    #    Returns pairs of keywords and the total number of datasets where they feature.
+    # Input:
+    #    flag: A filter indicating the type of dataset id to be searched for keywords.
+    #       No Value (default):  Keywords from all of the existing datasets.
+    #       p: Keywords from published datasets only.
+    #       d: Keywords from draft dataset only.
+    # Output:
+    #   dictionary: A dictionary containing keywords as keys, and the total number of datasets
+    # that hold that keyword as value.
+    def get_dataset_keywords(self, flag=''):
+        # Connect to the Dataverse API
+        dv_api = self.dv_connection.connect()
+
+        #  Gets the correct flag value
+        flag = self.get_flag_value(flag)
+
+        # Declare all variables
+        dictionary = {}
+        dataset_ids = self.get_dataset_ids(flag)
+
+        # Run the Dataset IDs array
+        for dataset_id in dataset_ids:
+            # Create the request
+            query_str = '/datasets/:persistentId/versions/:latest/metadata?'
+            params = {'persistentId': str(dataset_id)}
+            request = dv_api.get_request(query_str, params=params)
+
+            # JSON response
+            objects = json.loads(request.content.decode('utf-8', 'ignore'))
+
+            # Get the Keywords metadata block
+            if dictionary.get(dataset_id) is None and objects['status'] == 'OK':
+                field = self.get_metadata_field_item('keyword', objects)
+
+                # Check if the keyword metadata block exists.
+                if field is not None:
+                    # Run keyword metadata block
+                    for keywords in field['value']:
+                        if 'keywordValue' in keywords:
+                            keyword = keywords['keywordValue']['value']
+                            if dictionary.get(keyword) is None:
+                                dictionary[keyword] = 1
+                            else:
+                                count = dictionary[keyword]
+                                dictionary[keyword] = count + 1
+
+        return dictionary
+
     # Get All Dataset filecount
     #    Gets the number of files for each dataset
     # Input:

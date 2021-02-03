@@ -17,7 +17,7 @@ class FileOperations:
     def __init__(self, connection: dataverse_connection):
         self.dv_connection = connection
 
-# ==============================================================================================================================================
+    # ==============================================================================================================================================
     # File specific methods
 
     # Count files by file content type
@@ -32,12 +32,11 @@ class FileOperations:
 
         # Declare all variables
         start_page = 0
-        total_results = ''
         count = 0
         condition = True
 
         # Loop to compensate for the limitation in showing results
-        while (condition):
+        while condition:
 
             # Create the request
             query_str = '/search?q=*'
@@ -49,7 +48,7 @@ class FileOperations:
 
             # Filter by file content type
             for file in objects['data']['items']:
-                if (file['file_content_type'] == file_content_type):
+                if file['file_content_type'] == file_content_type:
                     count += 1
 
                     # Update start_page and total_results to cover for the limitation in showing results
@@ -63,15 +62,14 @@ class FileOperations:
     #    Counts the number of files per file content type
     # Input:
     # Output:
-    #    dictionary: A dictionary containing the file content types and the number of files associated with each file content type
+    #    dictionary: A dictionary containing the file content types and the
+    #    number of files associated with each file content type
     def count_all_files_by_file_content_type(self):
         # Connect to the Dataverse API
         dv_api = self.dv_connection.connect()
 
         # Declare all variables
         start_page = 0
-        total_results = ''
-        count = 0
         condition = True
         dictionary = {}
 

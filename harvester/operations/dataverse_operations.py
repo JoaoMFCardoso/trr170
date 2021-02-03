@@ -66,29 +66,39 @@ class DataverseOperations:
         return ids
 
     # Count Dataverse By Category
-    #    Returns a count of Dataverses in dataverse for the provided category
-    # Input:
-    #    category: A category, e.g. Organization or Institution
+    #    Counts the number of Dataverses for each existing category (dataverse type)
+    # Input: None
     # Output:
-    #    count: The number of dataverses, filtered by category. -1 if the category is not found.
-    def count_dataverse_by_category(self, category):
+    #    count: A dictionary, containing the category as key and the number of dataverses with
+    #    that category assigned as value.
+    def count_dataverse_by_category(self):
         # Connect to the Dataverse API
         dv_api = self.dv_connection.connect()
 
-        # Create the request
-        query_str = '/info/metrics/dataverses/byCategory/'
-        request = dv_api.get_request(query_str)
+        # create the variables
+        dictionary = {}
 
-        # JSON response
-        objects = json.loads(request.content.decode('utf8').replace("'", '"'))
+        # Get Dataset IDs
+        dataverse_ids = self.get_dataverse_ids()
 
-        # Filter by subject
-        for dv_object in objects['data']:
-            if dv_object['category'] == category:
-                count = dv_object['count']
-                return count
+        for dataverse_id in dataverse_ids:
+            # Create the request
+            query_str = '/dataverses/' + dataverse_id
+            request = dv_api.get_request(query_str, auth=True)
 
-        return -1
+            # JSON response
+            objects = json.loads(request.content.decode('utf-8', 'ignore'))
+
+            # Fill the dictionary
+            dataverse_type = objects['data']['dataverseType']
+
+            if dictionary.get(dataverse_type) is None:
+                dictionary[dataverse_type] = 1
+            else:
+                count = dictionary[dataverse_type]
+                dictionary[dataverse_type] = count + 1
+
+        return dictionary
 
     # Get All Dataverse Datasetcount
     #    Gets the number of datasets associated with each dataverse
@@ -102,12 +112,10 @@ class DataverseOperations:
         # create the variables
         dataverse_datasetcount = {}
         start_page = 0
-        total_results = ''
-        count = 0
         condition = True
 
         # Loop to compensate for the limitation in showing results
-        while (condition):
+        while condition:
 
             # Create the request
             query_str = '/search?q=*'

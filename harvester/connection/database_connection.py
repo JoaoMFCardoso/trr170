@@ -25,13 +25,9 @@ class Connection:
             # connect to the PostgreSQL server
             print('Connecting to the PostgreSQL database...')
             conn = psycopg2.connect(**self.connection_parameters)
-
+            print('Connected to the PostgreSQL database.')
             # Returns the connection
             return conn
 
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
-        finally:
-            if conn is not None:
-                conn.close()
-                print('Database connection closed.')

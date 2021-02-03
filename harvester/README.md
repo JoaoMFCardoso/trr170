@@ -213,16 +213,16 @@ Gets the size in bytes of each Dataverse.
 ---
 #### Count Dataverse by Category
 
-Returns a count of Dataverses in dataverse for the provided category.
+Counts the number of Dataverses for each existing category (dataverse type).
 
 - Input:
-    - A category, e.g. Organization or Institution.
+    - None.
 - Output: 
-    - The number of dataverses, filtered by a category. -1 if the category is not found.
+    - A dictionary, containing the category as key, and the number of dataverses with that category assigned as value.
 
 **Call Example**
     
-    count_dataverse_by_category('Organization')
+    count_dataverse_by_category()
 
 ___
 ___
@@ -236,6 +236,7 @@ Dataset operations focuses on operations that solely apply to Dataset objects ty
 - [Get All Dataset File count](#get-all-dataset-file-count)
 - [Get Dataset Size in Bytes](#get-dataset-size-in-bytes)
 - [Get Dataset Distributors](#get-dataset-distributors)
+- [Get Dataset Keywords](#get-dataset-keywords)
 - [Get Dataset Total Views](#get-dataset-total-views)
 - [Get Dataset Total Unique Views](#get-dataset-total-unique-views)
 - [Get Dataset Total Unique Downloads](#get-dataset-total-downloads)
@@ -307,6 +308,23 @@ Gets the name and affiliation of the distributors of each Dataset
 **Call Example**
     
     get_dataset_distributors()
+
+---
+#### Get Dataset Keywords
+
+Returns pairs of keywords and the total number of datasets where they feature.
+
+- Input:
+    - A filter indicating the type of dataset id to be searched for keywords. The filter values are as follows:
+      - No value [default]: Keywords from all the existing datasets.
+      - p: Keywords from published datasets only.
+      - d: Keywords from draft dataset only.
+- Output: 
+    - A dictionary containing keywords as keys, and the total number of datasets that hold that keyword, as value.
+
+**Call Example**
+    
+    get_dataset_keywords('p')
 
 ---
 #### Get Dataset Total Views
@@ -563,6 +581,7 @@ Counts the total number of users per affiliation.
 - Package main needs the cron module
 - Create a database where harvested data can be stored
 - Create a web interface for the harvested data
+- test descriptions
 
 
 
