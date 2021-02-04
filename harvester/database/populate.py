@@ -6,7 +6,7 @@ Created on 27 Jan 2021
 
 
 from harvester.connection import dataverse_connection, database_connection
-from harvester.operations import dataverse_operations, dataset_operations, user_operations, file_operations
+from harvester.operations import dataverse_operations, dataset_operations, user_operations, file_operations, general_operations
 from harvester.database import utils
 from datetime import datetime
 
@@ -159,7 +159,7 @@ class Populate:
         files_content_type = file_ops.count_all_files_by_file_content_type()
         print('content type metrics harvested.')
 
-        # Run affiliations and get the total number of users
+        # Run content types and get the total number of files
         for content_type in files_content_type:
             total_files = int(files_content_type[content_type])
             values = [content_type, total_files, self.ts]
@@ -179,13 +179,86 @@ class Populate:
         print('Harvesting keyword metrics...')
         dataset_ops = dataset_operations.DatasetOperations(self.dv_connection)
 
-        keywords = dataset_ops.get_total_datasets_per_keyword()
+        keywords = dataset_ops.get_dataset_keywords()
         print('keyword metrics harvested.')
 
-        # Run affiliations and get the total number of users
+        # Run keywords and get the total number of datasets
         for keyword in keywords:
             total_datasets = int(keywords[keyword])
             values = [keyword, total_datasets, self.ts]
 
             # Execute query
             utils.execute_query(self.db_connection, sql, values)
+
+    # Populate Roles
+    # Populates the roles table with current data from the associated Dataverse instance.
+    # Input: None
+    # Output: None
+    def populate_roles(self):
+        # Creating the SQL query for the insertion.
+        sql = """INSERT INTO roles(role, #users, ts) VALUES(%s, %d, %s);"""
+
+        # Harvesting
+        print('Harvesting roles metrics...')
+        user_ops = user_operations.UserOperations(self.dv_connection)
+
+        roles = user_ops.count_users_per_role()
+        print('roles metrics harvested.')
+
+        # Run roles and get the total number of users
+        for role in roles:
+            total_users = int(roles[role])
+            values = [role, total_users, self.ts]
+
+            # Execute query
+            utils.execute_query(self.db_connection, sql, values)
+
+    # Populate Subjects
+    # Populates the subjects table with current data from the associated Dataverse instance.
+    # Input: None
+    # Output: None
+    def populate_subjects(self):
+        # Creating the SQL query for the insertion.
+        sql = """INSERT INTO subjects(subject, #datasets, ts) VALUES(%s, %d, %s);"""
+
+        # Harvesting
+        print('Harvesting subject metrics...')
+        dataset_ops = dataset_operations.DatasetOperations(self.dv_connection)
+
+        subjects = dataset_ops.get_dataset_subjects()
+        print('subject metrics harvested.')
+
+        # Run subjects and get the total number of datasets
+        for subject in subjects:
+            total_datasets = int(subjects[subject])
+            values = [subject, total_datasets, self.ts]
+
+            # Execute query
+            utils.execute_query(self.db_connection, sql, values)
+
+    # Populate Totals
+    # Populates the totals table with current data from the associated Dataverse instance.
+    # Input: None
+    # Output: None
+    def populate_totals(self):
+        # Creating the SQL query for the insertion.
+        sql = """INSERT INTO totals(#dataverses, #datasets, #files, #users ts) VALUES(%d, %d, %d, %d, %s);"""
+
+        # Harvesting
+        print('Harvesting totals metrics...')
+        general_ops = general_operations.GeneralOperations(self.dv_connection)
+        user_ops = user_operations.UserOperations(self.dv_connection)
+
+        total_dataverses = general_ops.count_all('dataverse')
+        total_datasets = general_ops.count_all('dataset')
+        total_files = general_ops.count_all('file')
+        total_users = user_ops.count_all_users()
+
+        print('totals metrics harvested.')
+
+        # Execute query
+        values = [total_dataverses, total_datasets, total_files, total_users, self.ts]
+        utils.execute_query(self.db_connection, sql, values)
+
+
+

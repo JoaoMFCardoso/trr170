@@ -66,6 +66,14 @@ class DatasetOperationsTest(unittest.TestCase):
     def test_count_dataset_versions(self):
         count = self.dataset_ops.count_dataset_versions()
         self.assertIs(type(count), dict, 'Must return a dict')
+
+    def test_get_dataset_keywords(self):
+        count = self.dataset_ops.get_dataset_keywords()
+        self.assertIs(type(count), dict, 'Must return a dict')
+
+    def test_get_dataset_subjects(self):
+        count = self.dataset_ops.get_dataset_subjects()
+        self.assertIs(type(count), dict, 'Must return a dict')
     
     def test_count_dataset_draft_versions(self):
         count = self.dataset_ops.count_dataset_draft_versions()

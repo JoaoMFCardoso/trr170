@@ -289,6 +289,53 @@ class DatasetOperations:
 
         return dictionary
 
+    # Get Dataset Subjects
+    #    Returns pairs of subject and the total number of datasets where they feature.
+    # Input:
+    #    flag: A filter indicating the type of dataset id to be searched for subjects.
+    #       No Value (default):  Subjects from all of the existing datasets.
+    #       p: Subjects from published datasets only.
+    #       d: Subjects from draft dataset only.
+    # Output:
+    #   dictionary: A dictionary containing subjects as keys, and the total number of datasets
+    # that hold that subject as value.
+    def get_dataset_subjects(self, flag=''):
+        # Connect to the Dataverse API
+        dv_api = self.dv_connection.connect()
+
+        #  Gets the correct flag value
+        flag = self.get_flag_value(flag)
+
+        # Declare all variables
+        dictionary = {}
+        dataset_ids = self.get_dataset_ids(flag)
+
+        # Run the Dataset IDs array
+        for dataset_id in dataset_ids:
+            # Create the request
+            query_str = '/datasets/:persistentId/versions/:latest/metadata?'
+            params = {'persistentId': str(dataset_id)}
+            request = dv_api.get_request(query_str, params=params)
+
+            # JSON response
+            objects = json.loads(request.content.decode('utf-8', 'ignore'))
+
+            # Get the Keywords metadata block
+            if dictionary.get(dataset_id) is None and objects['status'] == 'OK':
+                field = self.get_metadata_field_item('subject', objects)
+
+                # Check if the subject metadata block exists.
+                if field is not None:
+                    # Run keyword metadata block
+                    for subject in field['value']:
+                        if dictionary.get(subject) is None:
+                            dictionary[subject] = 1
+                        else:
+                            count = dictionary[subject]
+                            dictionary[subject] = count + 1
+
+        return dictionary
+
     # Get All Dataset filecount
     #    Gets the number of files for each dataset
     # Input:
