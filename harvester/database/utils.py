@@ -60,7 +60,8 @@ def remove(db_connection, table_name, db_id):
 # Gets a row by its database id.
 # Input:
 #   db_id: The database id for a database table row.
-# Output: None
+# Output:
+#   row: The database table row corresponding the id.
 def get(db_connection, table_name, db_id):
     # Creating the SQL query for the deletion.
     sql = "SELECT * FROM " + table_name + " WHERE id = %d ORDER BY ts;"

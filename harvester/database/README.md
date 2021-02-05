@@ -24,27 +24,102 @@ The metrics database comprises 9 tables:
 
 ### affiliation
 
+| Column      | Description |
+| ----------- | ----------- |
+| id      | DB identifier       |
+| affiliation   | The affiliation name        |
+| #users   | Total number of users associated with the affiliation        |
+| ts   | Timestamp        |
+
 ### categories
+
+| Column      | Description |
+| ----------- | ----------- |
+| id      | DB identifier       |
+| category   | The category name        |
+| #dataverses   | Total number of dataverses associated with the category        |
+| ts   | Timestamp        |
 
 ### content_type
 
+| Column      | Description |
+| ----------- | ----------- |
+| id      | DB identifier       |
+| content_type   | The content type name        |
+| #files   | Total number of files associated with the content type        |
+| ts   | Timestamp        |
+
 ### dataverse
+
+| Column      | Description |
+| ----------- | ----------- |
+| id      | DB identifier       |
+| dataverse_id   | The dataverse persistent id       |
+| #datasets   | Total number of datasets associated with the dataverse        |
+| #size   | Total size in Bytes of the dataverse        |
+| ts   | Timestamp        |
 
 ### dataset
 
+| Column      | Description |
+| ----------- | ----------- |
+| id      | DB identifier       |
+| dataset_id   | The dataset persistent id       |
+| #filecount   | Total number of files associated with the dataset        |
+| #size   | Total size in Bytes of the dataset        |
+| #versions   | Total number of versions of the dataset        |
+| #draft_versions   | Total number of draft versions of the dataset        |
+| #views   | Total number of views of the dataset        |
+| #unique_views   | Total number of unique views of the dataset        |
+| #downloads   | Total number of downloads of the dataset        |
+| #unique_downloads   | Total number of unique downloads of the dataset        |
+| #citations   | Total number of citations of the dataset        |
+| ts   | Timestamp        |
+
 ### keywords
+
+| Column      | Description |
+| ----------- | ----------- |
+| id      | DB identifier       |
+| keyword   | The keyword name        |
+| #datasets   | Total number of datasets associated with the keyword        |
+| ts   | Timestamp        |
 
 ### roles
 
+| Column      | Description |
+| ----------- | ----------- |
+| id      | DB identifier       |
+| role   | The role name        |
+| #users   | Total number of users associated with the role        |
+| ts   | Timestamp        |
+
 ### subjects
 
+| Column      | Description |
+| ----------- | ----------- |
+| id      | DB identifier       |
+| subject   | The subject name        |
+| #datasets   | Total number of datasets associated with the subject        |
+| ts   | Timestamp        |
+
+
 ### totals
+
+| Column      | Description |
+| ----------- | ----------- |
+| id      | DB identifier       |
+| #dataverses   | Total number of dataverses |
+| #datasets   | Total number of datasets |
+| #files   | Total number of files |
+| #users   | Total number of users |
+| ts   | Timestamp        |
 
 ---
 ---
 ## Populate
 
-General operations focuses on operations that apply to all object types.
+These methods harvest data from the dataverse instance and populate the metrics tables.
 
 ### List of methods
   
@@ -61,137 +136,128 @@ General operations focuses on operations that apply to all object types.
 ---
 ### Populate Affiliation
 
-Returns a count of a provided object over all-time.
+Populates the affiliation table with current data from the associated Dataverse instance.
 
 - Input: 
-    - An object type, e.g. dataverse, dataset, file.
+    - None.
 - Output: 
-    - The number of object listing from the provided type. -1 if object type is not valid.
+    - None.
 
 **Call Example**
 
-    count_all('dataverse')
+    populate_affiliation()
 
 ---
 ### Populate Categories
 
-Returns a count of provided objects in dataverse up to a specified month YYYY DD in YYYY-MM format (e.g. 2020-12).
+Populates the categories table with current data from the associated Dataverse instance.
 
-- Input:
-    - An object type, e.g. dataverse, dataset, file.
-    - YYYY, e.g. 2020.
-    - MM, e.g. 12
-- Output:
-    - The number of object listing from the provided type, filtered by a year and month. -1 if object type is not valid.
-
+- Input: 
+    - None.
+- Output: 
+    - None.
+  
 **Call Example**
     
-    count_to_month('dataverse', '12', '2020')
+    populate_category()
 
 ---
 ### Populate Content_Type
 
-Returns a count of provided objects in dataverse for the past $days (e.g. 30).
+Populates the content_type table with current data from the associated Dataverse instance.
 
-- Input:
-    - An object type, e.g. dataverse, dataset, file.
-    - DD, e.g. 20.
-- Output:
-    - The number of object listing from the provided type, filtered by days. -1 if object type is not valid.
-
+- Input: 
+    - None.
+- Output: 
+    - None.
+  
 **Call Example**
     
-    count_by_days('dataverse', '20')
+    populate_content_type()
 
 ---
 ### Populate Dataverse
 
-Returns a count of provided objects in dataverse for the provided subject.
+Populates the dataverse table with current data from the associated Dataverse instance.
 
-- Input:
-    - An object type, e.g. dataverse, dataset, file.
-    - A subject, e.g. Earth and Environmental Sciences.
-- Output:
-    - The number of object listing from the provided type, filtered by subject. -1 if object type is not valid or subject not found.
-
+- Input: 
+    - None.
+- Output: 
+    - None.
+  
 **Call Example**
     
-    count_by_subject('Earth and Environmental Sciences')
+    populate_dataverse()
 
 ---
 ### Populate Dataset
 
-Returns a count of provided objects in dataverse for the provided subject.
+Populates the dataset table with current data from the associated Dataverse instance.
 
-- Input:
-    - An object type, e.g. dataverse, dataset, file.
-    - A subject, e.g. Earth and Environmental Sciences.
-- Output:
-    - The number of object listing from the provided type, filtered by subject. -1 if object type is not valid or subject not found.
-
+- Input: 
+    - None.
+- Output: 
+    - None.
+  
 **Call Example**
     
-    count_by_subject('Earth and Environmental Sciences')
+    populate_dataset()
 
 ---
 ### Populate Keywords
 
-Returns a count of provided objects in dataverse for the provided subject.
+Populates the keywords table with current data from the associated Dataverse instance.
 
-- Input:
-    - An object type, e.g. dataverse, dataset, file.
-    - A subject, e.g. Earth and Environmental Sciences.
-- Output:
-    - The number of object listing from the provided type, filtered by subject. -1 if object type is not valid or subject not found.
-
+- Input: 
+    - None.
+- Output: 
+    - None.
+  
 **Call Example**
     
-    count_by_subject('Earth and Environmental Sciences')
+    populate_keywords()
 
 ---
 ### Populate Roles
 
-Returns a count of provided objects in dataverse for the provided subject.
+Populates the roles table with current data from the associated Dataverse instance.
 
-- Input:
-    - An object type, e.g. dataverse, dataset, file.
-    - A subject, e.g. Earth and Environmental Sciences.
-- Output:
-    - The number of object listing from the provided type, filtered by subject. -1 if object type is not valid or subject not found.
-
+- Input: 
+    - None.
+- Output: 
+    - None.
+  
 **Call Example**
     
-    count_by_subject('Earth and Environmental Sciences')
+    populate_roles()
 
 ---
 ### Populate Subjects
 
-Returns a count of provided objects in dataverse for the provided subject.
+Populates the subjects table with current data from the associated Dataverse instance.
 
-- Input:
-    - An object type, e.g. dataverse, dataset, file.
-    - A subject, e.g. Earth and Environmental Sciences.
-- Output:
-    - The number of object listing from the provided type, filtered by subject. -1 if object type is not valid or subject not found.
-
+- Input: 
+    - None.
+- Output: 
+    - None.
+  
 **Call Example**
     
-    count_by_subject('Earth and Environmental Sciences')
+    populate_subjects()
 
 ---
 ### Populate Totals
 
-Returns a count of provided objects in dataverse for the provided subject.
+Populates the totals table with current data from the associated Dataverse instance.
 
-- Input:
-    - An object type, e.g. dataverse, dataset, file.
-    - A subject, e.g. Earth and Environmental Sciences.
-- Output:
-    - The number of object listing from the provided type, filtered by subject. -1 if object type is not valid or subject not found.
-
+- Input: 
+    - None.
+- Output: 
+    - None.
+  
 **Call Example**
     
-    count_by_subject('Earth and Environmental Sciences')
+    populate_totals()
 
 ___
 ___
@@ -208,41 +274,47 @@ User operations focuses on operations that solely apply to user objects types.
 ---
 ### Execute Query
 
-Counts the total number of users
+Executes a provided query with the provided values
 
 - Input:
-    - None.
+    -  sql_query: An SQL query.
+    -  values: The values to be featured in the query.
 - Output: 
-    - The total number of users.
+    - result: The result of the query.
 
 **Call Example**
     
-    count_all_users()
+    db_connection = database_connection.Connection('host', 'port', 'metrics', 'user', 'password')
+    values = [1]
+    sql_query = "SELECT * FROM affiliation WHERE id = %d;"
+    execute_query(db_connection, sql_query, values)
 
 ---
 ### Remove
 
-Counts the total number of users per role.
+Removes a row by its database id.
 
 - Input:
-    - None.
+    - db_id: The database id for a database table row.
 - Output: 
-    - A dictionary containing the role as key, and the number of users sharing that role as value.
+    - None.
 
 **Call Example**
     
-    count_users_per_role()
+    db_connection = database_connection.Connection('host', 'port', 'metrics', 'user', 'password')
+    remove(db_connection, affiliation, 1)
 
 ---
 ### Get
 
-Counts the total number of users per affiliation.
+Gets a row by its database id.
 
 - Input:
-    - None.
+    - db_id: The database id for a database table row.
 - Output: 
-    - A dictionary containing the affiliation as key, and the number of users sharing that affiliation as value.
+    - row: The database table row corresponding the id.
 
 **Call Example**
     
-    count_users_per_affiliation()
+    db_connection = database_connection.Connection('host', 'port', 'metrics', 'user', 'password')
+    row = get(db_connection, affiliation, 1)
