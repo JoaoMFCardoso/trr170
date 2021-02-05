@@ -5,10 +5,6 @@ Created on 02 Fev 2021
 """
 import psycopg2
 
-from harvester.connection import dataverse_connection, database_connection
-from harvester.operations import dataverse_operations
-from datetime import datetime
-
 
 # METHODS=======================================================================================================================================
 
