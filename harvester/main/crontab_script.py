@@ -6,11 +6,7 @@ Created on 10 Fev 2021
 
 from crontab import CronTab
 
-cron = CronTab(tab="""* * * * * command""")
+cron = CronTab(user='root')
 job = cron.new(command='python harvest_trr170.py')
+job.dow.on('SUN')
 cron.write()
-
-for result in cron.run_scheduler():
-    print("This was printed to stdout by the process.")
-
-
