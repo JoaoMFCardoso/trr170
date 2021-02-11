@@ -23,9 +23,7 @@ class Connection:
         conn = None
         try:
             # connect to the PostgreSQL server
-            print('Connecting to the PostgreSQL database...')
             conn = psycopg2.connect(**self.connection_parameters)
-            print('Connected to the PostgreSQL database.')
             # Returns the connection
             return conn
 

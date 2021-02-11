@@ -35,15 +35,13 @@ class Populate:
     # Output: None
     def populate_dataverse(self):
         # Creating the SQL query for the insertion.
-        sql = "INSERT INTO dataverse(dataverse_id, #datasets, #size, ts) VALUES(%s, %d, %d, %s);"
+        sql = "INSERT INTO dataverse(dataverse_id, n_datasets, n_size, ts) VALUES(%s, %s, %s, %s);"
 
         # Harvesting
-        print("Harvesting dataverse metrics...")
         dataverse_ops = dataverse_operations.DataverseOperations(self.dv_connection)
 
         dataverse_datasetcount = dataverse_ops.get_all_dataverse_datasetcount()
         dataverse_size = dataverse_ops.get_dataverse_size()
-        print('Dataverse metrics harvested.')
 
         # Run dataverses and get the values
         for dataverse in dataverse_datasetcount:
@@ -58,14 +56,12 @@ class Populate:
     # Output: None
     def populate_category(self):
         # Creating the SQL query for the insertion.
-        sql = """INSERT INTO category(category, #dataverses, ts) VALUES(%s, %d, %s);"""
+        sql = """INSERT INTO categories(category, n_dataverses, ts) VALUES(%s, %s, %s);"""
 
         # Harvesting
-        print('Harvesting category metrics...')
         dataverse_ops = dataverse_operations.DataverseOperations(self.dv_connection)
 
         dataverse_categories = dataverse_ops.count_dataverse_by_category()
-        print('category metrics harvested.')
 
         # Run affiliations and get the total number of users
         for category in dataverse_categories:
@@ -81,12 +77,11 @@ class Populate:
     # Output: None
     def populate_dataset(self):
         # Creating the SQL query for the insertion.
-        sql = """INSERT INTO dataset(dataset_id, #filecount, #size, #versions,
-            #draft_versions, #views, #unique_views, #downloads, #unique_downloads,
-            #citations, ts) VALUES(%s, %d, %d, $d, %d, %d, $d, %d, %d, $d, %s);"""
+        sql = """INSERT INTO dataset(dataset_id, n_filecount, n_size, n_versions,
+            n_draft_versions, n_views, n_unique_views, n_downloads, n_unique_downloads,
+            n_citations, ts) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
 
         # Harvesting
-        print('Harvesting dataset metrics...')
         dataset_ops = dataset_operations.DatasetOperations(self.dv_connection)
 
         all_dataset_filecount = dataset_ops.get_all_dataset_filecount()
@@ -98,7 +93,6 @@ class Populate:
         dataset_downloads = dataset_ops.get_dataset_total_downloads()
         dataset_unique_downloads = dataset_ops.get_dataset_total_unique_downloads()
         dataset_citations = dataset_ops.get_dataset_total_citations()
-        print('Dataset metrics harvested.')
 
         # Run datasets and get the values
         for dataset in all_dataset_filecount:
@@ -127,14 +121,12 @@ class Populate:
     # Output: None
     def populate_affiliation(self):
         # Creating the SQL query for the insertion.
-        sql = """INSERT INTO affiliation(affiliation, #users, ts) VALUES(%s, %d, %s);"""
+        sql = """INSERT INTO affiliation(affiliation, n_users, ts) VALUES(%s, %s, %s);"""
 
         # Harvesting
-        print('Harvesting affiliation metrics...')
         user_ops = user_operations.UserOperations(self.dv_connection)
 
         users_per_affiliation = user_ops.count_users_per_affiliation()
-        print('affiliation metrics harvested.')
 
         # Run affiliations and get the total number of users
         for affiliation in users_per_affiliation:
@@ -150,14 +142,12 @@ class Populate:
     # Output: None
     def populate_content_type(self):
         # Creating the SQL query for the insertion.
-        sql = """INSERT INTO content_type(content_type, #files, ts) VALUES(%s, %d, %s);"""
+        sql = """INSERT INTO content_type(content_type, n_files, ts) VALUES(%s, %s, %s);"""
 
         # Harvesting
-        print('Harvesting content type metrics...')
         file_ops = file_operations.FileOperations(self.dv_connection)
 
         files_content_type = file_ops.count_all_files_by_file_content_type()
-        print('content type metrics harvested.')
 
         # Run content types and get the total number of files
         for content_type in files_content_type:
@@ -173,14 +163,12 @@ class Populate:
     # Output: None
     def populate_keywords(self):
         # Creating the SQL query for the insertion.
-        sql = """INSERT INTO keywords(keyword, #datasets, ts) VALUES(%s, %d, %s);"""
+        sql = """INSERT INTO keywords(keyword, n_datasets, ts) VALUES(%s, %s, %s);"""
 
         # Harvesting
-        print('Harvesting keyword metrics...')
         dataset_ops = dataset_operations.DatasetOperations(self.dv_connection)
 
         keywords = dataset_ops.get_dataset_keywords()
-        print('keyword metrics harvested.')
 
         # Run keywords and get the total number of datasets
         for keyword in keywords:
@@ -196,14 +184,12 @@ class Populate:
     # Output: None
     def populate_roles(self):
         # Creating the SQL query for the insertion.
-        sql = """INSERT INTO roles(role, #users, ts) VALUES(%s, %d, %s);"""
+        sql = """INSERT INTO roles(role, n_users, ts) VALUES(%s, %s, %s);"""
 
         # Harvesting
-        print('Harvesting roles metrics...')
         user_ops = user_operations.UserOperations(self.dv_connection)
 
         roles = user_ops.count_users_per_role()
-        print('roles metrics harvested.')
 
         # Run roles and get the total number of users
         for role in roles:
@@ -219,14 +205,11 @@ class Populate:
     # Output: None
     def populate_subjects(self):
         # Creating the SQL query for the insertion.
-        sql = """INSERT INTO subjects(subject, #datasets, ts) VALUES(%s, %d, %s);"""
+        sql = """INSERT INTO subjects(subject, n_datasets, ts) VALUES(%s, %s, %s);"""
 
         # Harvesting
-        print('Harvesting subject metrics...')
         dataset_ops = dataset_operations.DatasetOperations(self.dv_connection)
-
         subjects = dataset_ops.get_dataset_subjects()
-        print('subject metrics harvested.')
 
         # Run subjects and get the total number of datasets
         for subject in subjects:
@@ -242,10 +225,9 @@ class Populate:
     # Output: None
     def populate_totals(self):
         # Creating the SQL query for the insertion.
-        sql = """INSERT INTO totals(#dataverses, #datasets, #files, #users ts) VALUES(%d, %d, %d, %d, %s);"""
+        sql = """INSERT INTO totals(n_dataverses, n_datasets, n_files, n_users, ts) VALUES(%s, %s, %s, %s, %s);"""
 
         # Harvesting
-        print('Harvesting totals metrics...')
         general_ops = general_operations.GeneralOperations(self.dv_connection)
         user_ops = user_operations.UserOperations(self.dv_connection)
 
@@ -253,8 +235,6 @@ class Populate:
         total_datasets = general_ops.count_all('dataset')
         total_files = general_ops.count_all('file')
         total_users = user_ops.count_all_users()
-
-        print('totals metrics harvested.')
 
         # Execute query
         values = [total_dataverses, total_datasets, total_files, total_users, self.ts]

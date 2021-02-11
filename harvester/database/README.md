@@ -28,7 +28,7 @@ The metrics database comprises 9 tables:
 | ----------- | ----------- |
 | id      | DB identifier       |
 | affiliation   | The affiliation name        |
-| #users   | Total number of users associated with the affiliation        |
+| n_users   | Total number of users associated with the affiliation        |
 | ts   | Timestamp        |
 
 ### categories
@@ -37,7 +37,7 @@ The metrics database comprises 9 tables:
 | ----------- | ----------- |
 | id      | DB identifier       |
 | category   | The category name        |
-| #dataverses   | Total number of dataverses associated with the category        |
+| n_dataverses   | Total number of dataverses associated with the category        |
 | ts   | Timestamp        |
 
 ### content_type
@@ -46,7 +46,7 @@ The metrics database comprises 9 tables:
 | ----------- | ----------- |
 | id      | DB identifier       |
 | content_type   | The content type name        |
-| #files   | Total number of files associated with the content type        |
+| n_files   | Total number of files associated with the content type        |
 | ts   | Timestamp        |
 
 ### dataverse
@@ -55,8 +55,8 @@ The metrics database comprises 9 tables:
 | ----------- | ----------- |
 | id      | DB identifier       |
 | dataverse_id   | The dataverse persistent id       |
-| #datasets   | Total number of datasets associated with the dataverse        |
-| #size   | Total size in Bytes of the dataverse        |
+| n_datasets   | Total number of datasets associated with the dataverse        |
+| n_size   | Total size in Bytes of the dataverse        |
 | ts   | Timestamp        |
 
 ### dataset
@@ -65,15 +65,15 @@ The metrics database comprises 9 tables:
 | ----------- | ----------- |
 | id      | DB identifier       |
 | dataset_id   | The dataset persistent id       |
-| #filecount   | Total number of files associated with the dataset        |
-| #size   | Total size in Bytes of the dataset        |
-| #versions   | Total number of versions of the dataset        |
-| #draft_versions   | Total number of draft versions of the dataset        |
-| #views   | Total number of views of the dataset        |
-| #unique_views   | Total number of unique views of the dataset        |
-| #downloads   | Total number of downloads of the dataset        |
-| #unique_downloads   | Total number of unique downloads of the dataset        |
-| #citations   | Total number of citations of the dataset        |
+| n_filecount   | Total number of files associated with the dataset        |
+| n_size   | Total size in Bytes of the dataset        |
+| n_versions   | Total number of versions of the dataset        |
+| n_draft_versions   | Total number of draft versions of the dataset        |
+| n_views   | Total number of views of the dataset        |
+| n_unique_views   | Total number of unique views of the dataset        |
+| n_downloads   | Total number of downloads of the dataset        |
+| n_unique_downloads   | Total number of unique downloads of the dataset        |
+| n_citations   | Total number of citations of the dataset        |
 | ts   | Timestamp        |
 
 ### keywords
@@ -82,7 +82,7 @@ The metrics database comprises 9 tables:
 | ----------- | ----------- |
 | id      | DB identifier       |
 | keyword   | The keyword name        |
-| #datasets   | Total number of datasets associated with the keyword        |
+| n_datasets   | Total number of datasets associated with the keyword        |
 | ts   | Timestamp        |
 
 ### roles
@@ -91,7 +91,7 @@ The metrics database comprises 9 tables:
 | ----------- | ----------- |
 | id      | DB identifier       |
 | role   | The role name        |
-| #users   | Total number of users associated with the role        |
+| n_users   | Total number of users associated with the role        |
 | ts   | Timestamp        |
 
 ### subjects
@@ -100,7 +100,7 @@ The metrics database comprises 9 tables:
 | ----------- | ----------- |
 | id      | DB identifier       |
 | subject   | The subject name        |
-| #datasets   | Total number of datasets associated with the subject        |
+| n_datasets   | Total number of datasets associated with the subject        |
 | ts   | Timestamp        |
 
 
@@ -109,10 +109,10 @@ The metrics database comprises 9 tables:
 | Column      | Description |
 | ----------- | ----------- |
 | id      | DB identifier       |
-| #dataverses   | Total number of dataverses |
-| #datasets   | Total number of datasets |
-| #files   | Total number of files |
-| #users   | Total number of users |
+| n_dataverses   | Total number of dataverses |
+| n_datasets   | Total number of datasets |
+| n_files   | Total number of files |
+| n_users   | Total number of users |
 | ts   | Timestamp        |
 
 ---
