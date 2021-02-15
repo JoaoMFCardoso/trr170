@@ -36,8 +36,8 @@ db_connection = database_connection.Connection(host, port, database, user, passw
 print("Establishing Database connection ... DONE")
 
 # Populating the tables
-populate = True
-if populate:
+condition = True
+if condition:
     print("Populating the Database tables ...")
     dv_pp = populate.Populate(trr177_connection, db_connection)
 
