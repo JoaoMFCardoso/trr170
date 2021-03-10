@@ -79,7 +79,7 @@ class Populate:
         # Creating the SQL query for the insertion.
         sql = """INSERT INTO dataset(dataset_id, n_filecount, n_size, n_versions,
             n_draft_versions, n_views, n_unique_views, n_downloads, n_unique_downloads,
-            n_citations, ts) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
+            n_citations, topic_classification, ts) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
 
         # Harvesting
         dataset_ops = dataset_operations.DatasetOperations(self.dv_connection)
@@ -93,6 +93,7 @@ class Populate:
         dataset_downloads = dataset_ops.get_dataset_total_downloads()
         dataset_unique_downloads = dataset_ops.get_dataset_total_unique_downloads()
         dataset_citations = dataset_ops.get_dataset_total_citations()
+        topic_classifications = dataset_ops.get_dataset_topic_classification()
 
         # Run datasets and get the values
         for dataset in all_dataset_filecount:
@@ -107,10 +108,11 @@ class Populate:
             downloads = int(dataset_downloads[dataset])
             unique_downloads = int(dataset_unique_downloads[dataset])
             citations = int(dataset_citations[dataset])
+            topic_classification = topic_classifications[dataset]
 
             values = [dataset, filecount, size, versions, draft_versions,
                       views, unique_views, downloads, unique_downloads,
-                      citations, self.ts]
+                      citations, topic_classification, self.ts]
 
             # execute the INSERT statement
             utils.execute_query(self.db_connection, sql, values)

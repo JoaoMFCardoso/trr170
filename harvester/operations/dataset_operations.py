@@ -240,6 +240,115 @@ class DatasetOperations:
 
         return count
 
+    # Count Dataset Topic Classification
+    #    Returns pairs of topics of classification and the total number of datasets where they feature.
+    # Input:
+    #    flag: A filter indicating the type of dataset id to be searched for subjects.
+    #       No Value (default):  Subjects from all of the existing datasets.
+    #       p: Subjects from published datasets only.
+    #       d: Subjects from draft dataset only.
+    # Output:
+    #   dictionary: A dictionary containing topics of classification as keys, and the total number of datasets
+    # as value.
+    def count_dataset_topic_classification(self, flag=''):
+        # Connect to the Dataverse API
+        dv_api = self.dv_connection.connect()
+
+        #  Gets the correct flag value
+        flag = self.get_flag_value(flag)
+
+        # Declare all variables
+        dictionary = {}
+        dataset_ids = self.get_dataset_ids(flag)
+
+        # Run the Dataset IDs array
+        for dataset_id in dataset_ids:
+            # Create the request
+            query_str = '/datasets/:persistentId/versions/:latest/metadata?'
+            params = {'persistentId': str(dataset_id)}
+            request = dv_api.get_request(query_str, params=params)
+
+            # JSON response
+            objects = json.loads(request.content.decode('utf-8', 'ignore'))
+
+            # Get the topic classification metadata block
+            if objects['status'] == 'OK':
+                field = self.get_metadata_field_item('topicClassification', objects)
+
+                # Check if the subject metadata block exists.
+                if field is not None:
+                    # Run topic value metadata block
+                    for topics in field['value']:
+                        if 'topicClassValue' in topics:
+                            topic = topics['topicClassValue']['value']
+                            if dictionary.get(topic) is None:
+                                dictionary[topic] = 1
+                            else:
+                                count = dictionary[topic]
+                                dictionary[topic] = count + 1
+
+        return dictionary
+
+    # Count Dataset Versions
+    #    Counts the number of versions associated with each existing Dataset
+    # Input:
+    # Output:
+    #    dictionary: A dictionary containing the Dataset identifiers as keys,
+    #    and the number of existing versions as value
+    def count_dataset_versions(self):
+        # Connect to the Dataverse API
+        dv_api = self.dv_connection.connect()
+
+        # Declare all variables
+        dictionary = {}
+        dataset_ids = self.get_dataset_ids()
+
+        # Run the Dataset IDs array
+        for dataset_id in dataset_ids:
+            # Create the request
+            query_str = '/datasets/:persistentId/versions/?'
+            params = {'persistentId': str(dataset_id)}
+            request = dv_api.get_request(query_str, params=params)
+
+            # JSON response
+            objects = json.loads(request.content.decode('utf-8', 'ignore'))
+
+            # Fill dictionary
+            if dictionary.get(dataset_id) is None and objects['status'] == 'OK':
+                dictionary[dataset_id] = len(objects['data'])
+
+        return dictionary
+
+    # Count Dataset Draft Versions
+    #    Gets the number of draft versions associated with each existing Dataset
+    # Input:
+    # Output:
+    #    dictionary: A dictionary containing the Dataset identifiers as keys,
+    #    and the number of existing draft versions as value
+    def count_dataset_draft_versions(self):
+        # Connect to the Dataverse API
+        dv_api = self.dv_connection.connect()
+
+        # Declare all variables
+        dictionary = {}
+        dataset_ids = self.get_dataset_ids()
+
+        # Run the Dataset IDs array
+        for dataset_id in dataset_ids:
+            # Create the request
+            query_str = '/datasets/:persistentId/versions/:draft?'
+            params = {'persistentId': str(dataset_id)}
+            request = dv_api.get_request(query_str, params=params, auth=True)
+
+            # JSON response
+            objects = json.loads(request.content.decode('utf-8', 'ignore'))
+
+            # Fill dictionary
+            if dictionary.get(dataset_id) is None and objects['status'] == 'OK':
+                dictionary[dataset_id] = len(objects['data'])
+
+        return dictionary
+
     # Get Dataset Keywords
     #    Returns pairs of keywords and the total number of datasets where they feature.
     # Input:
@@ -272,7 +381,7 @@ class DatasetOperations:
             objects = json.loads(request.content.decode('utf-8', 'ignore'))
 
             # Get the Keywords metadata block
-            if dictionary.get(dataset_id) is None and objects['status'] == 'OK':
+            if objects['status'] == 'OK':
                 field = self.get_metadata_field_item('keyword', objects)
 
                 # Check if the keyword metadata block exists.
@@ -321,12 +430,12 @@ class DatasetOperations:
             objects = json.loads(request.content.decode('utf-8', 'ignore'))
 
             # Get the Keywords metadata block
-            if dictionary.get(dataset_id) is None and objects['status'] == 'OK':
+            if objects['status'] == 'OK':
                 field = self.get_metadata_field_item('subject', objects)
 
                 # Check if the subject metadata block exists.
                 if field is not None:
-                    # Run keyword metadata block
+                    # Run subject metadata block
                     for subject in field['value']:
                         if dictionary.get(subject) is None:
                             dictionary[subject] = 1
@@ -334,6 +443,55 @@ class DatasetOperations:
                             count = dictionary[subject]
                             dictionary[subject] = count + 1
 
+        return dictionary
+
+    # Get Datasets by Topic Classification
+    #    Returns pairs of topics of classification and the list of datasets where they feature.
+    # Input:
+    #    flag: A filter indicating the type of dataset id to be searched for subjects.
+    #       No Value (default):  Subjects from all of the existing datasets.
+    #       p: Subjects from published datasets only.
+    #       d: Subjects from draft dataset only.
+    # Output:
+    #   dictionary: A dictionary containing topics of classification as keys,
+    #   and a list of persistent dataset ids as value
+    def get_dataset_topic_classification(self, flag=''):
+        # Connect to the Dataverse API
+        dv_api = self.dv_connection.connect()
+
+        #  Gets the correct flag value
+        flag = self.get_flag_value(flag)
+
+        # Declare all variables
+        dictionary = {}
+        dataset_ids = self.get_dataset_ids(flag)
+
+        # Run the Dataset IDs array
+        for dataset_id in dataset_ids:
+            # Create the request
+            query_str = '/datasets/:persistentId/versions/:latest/metadata?'
+            params = {'persistentId': str(dataset_id)}
+            request = dv_api.get_request(query_str, params=params)
+
+            # JSON response
+            objects = json.loads(request.content.decode('utf-8', 'ignore'))
+
+            # Get the Keywords metadata block
+            if objects['status'] == 'OK':
+                field = self.get_metadata_field_item('topicClassification', objects)
+
+                # Check if the subject metadata block exists.
+                if field is not None:
+                    # Run topic value metadata block
+                    for topics in field['value']:
+                        if 'topicClassValue' in topics:
+                            topic = topics['topicClassValue']['value']
+                            if dictionary.get(dataset_id) is None:
+                                dictionary[dataset_id] = [topic]
+                            else:
+                                # Adds the dataset id if not already in the list.
+                                if topic not in dictionary[dataset_id]:
+                                    dictionary[dataset_id].append(topic)
         return dictionary
 
     # Get All Dataset filecount
@@ -408,66 +566,6 @@ class DatasetOperations:
             start_page = start_page + self.rows
             total_results = objects['data']['total_count']
             condition = start_page < total_results
-
-        return dictionary
-
-    # Count Dataset Versions
-    #    Counts the number of versions associated with each existing Dataset
-    # Input:
-    # Output:
-    #    dictionary: A dictionary containing the Dataset identifiers as keys,
-    #    and the number of existing versions as value
-    def count_dataset_versions(self):
-        # Connect to the Dataverse API
-        dv_api = self.dv_connection.connect()
-
-        # Declare all variables
-        dictionary = {}
-        dataset_ids = self.get_dataset_ids()
-
-        # Run the Dataset IDs array
-        for dataset_id in dataset_ids:
-            # Create the request
-            query_str = '/datasets/:persistentId/versions/?'
-            params = {'persistentId': str(dataset_id)}
-            request = dv_api.get_request(query_str, params=params)
-
-            # JSON response
-            objects = json.loads(request.content.decode('utf-8', 'ignore'))
-
-            # Fill dictionary
-            if dictionary.get(dataset_id) is None and objects['status'] == 'OK':
-                dictionary[dataset_id] = len(objects['data'])
-
-        return dictionary
-
-    # Count Dataset Draft Versions
-    #    Gets the number of draft versions associated with each existing Dataset
-    # Input:
-    # Output:
-    #    dictionary: A dictionary containing the Dataset identifiers as keys,
-    #    and the number of existing draft versions as value
-    def count_dataset_draft_versions(self):
-        # Connect to the Dataverse API
-        dv_api = self.dv_connection.connect()
-
-        # Declare all variables
-        dictionary = {}
-        dataset_ids = self.get_dataset_ids()
-
-        # Run the Dataset IDs array
-        for dataset_id in dataset_ids:
-            # Create the request
-            query_str = '/datasets/:persistentId/versions/:draft?'
-            params = {'persistentId': str(dataset_id)}
-            request = dv_api.get_request(query_str, params=params, auth=True)
-
-            # JSON response
-            objects = json.loads(request.content.decode('utf-8', 'ignore'))
-
-            # Fill dictionary
-            if dictionary.get(dataset_id) is None and objects['status'] == 'OK':
-                dictionary[dataset_id] = len(objects['data'])
 
         return dictionary
 
