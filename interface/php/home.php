@@ -43,7 +43,7 @@
                         <span>Copyright © 2021</span>
                     </div>
                     <div class="col-sm-4 text-right">
-                        <div class="fundedbylogo">
+                        <div class="funder_logo">
                             <span>Funded by</span>
                             <a href="https://fu-berlin.de/" title="Freie Universität Berlin" target="_blank" rel="noopener"><img src="/trr170/interface/img/fuberlin.png" width="172" height="67.5" onerror="this.src='/trr170/interface/img/fuberlin.png'" alt="Freie Universität Berlin logo"></a>
 
