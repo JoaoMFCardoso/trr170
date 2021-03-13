@@ -487,11 +487,7 @@ class DatasetOperations:
                         if 'topicClassValue' in topics:
                             topic = topics['topicClassValue']['value']
                             if dictionary.get(dataset_id) is None:
-                                dictionary[dataset_id] = [topic]
-                            else:
-                                # Adds the dataset id if not already in the list.
-                                if topic not in dictionary[dataset_id]:
-                                    dictionary[dataset_id].append(topic)
+                                dictionary[dataset_id] = topic
         return dictionary
 
     # Get All Dataset filecount

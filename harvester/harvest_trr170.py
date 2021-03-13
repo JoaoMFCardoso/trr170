@@ -10,7 +10,7 @@ import configparser
 
 # Get the configurations from config.ini
 config = configparser.ConfigParser()
-config.read('../config.ini')
+config.read('./config.ini')
 
 # Dataverse
 print("Getting Dataverse configurations ...")
@@ -65,6 +65,9 @@ if condition:
     print("Populating keywords table ...")
     dv_pp.populate_keywords()
     print("Populating keywords table ... DONE")
+    print("Populating topics table ...")
+    dv_pp.populate_topics()
+    print("Populating topics table ... DONE")
     print("Populating subjects table ...")
     dv_pp.populate_subjects()
     print("Populating subjects table ... DONE")
