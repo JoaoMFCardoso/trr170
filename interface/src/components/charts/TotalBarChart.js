@@ -36,7 +36,7 @@ const TotalBarChart = ({ chart_data, chart_labels }) => {
                         data: chart_data[3].q4,
                         barThickness: 30,
                         backgroundColor: "rgba(246,164,142,.5)",
-                        borderColor: "#F6A48Es",
+                        borderColor: "#F6A48E",
                         borderWidth: 3
                     }
                 ]

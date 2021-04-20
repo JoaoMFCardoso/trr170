@@ -16,23 +16,17 @@ const file_count = [{q1: [18,1,1,1,1]}, {q2: [17,1,2,1,3]},{q3: [20,1,2,2,4]},{q
 
 
 
-export default function DatasetCharts() {
-    const [active, setActive] = useState("topic");
+export default function FileCharts() {
+    const [active, setActive] = useState("content_type");
 
     return(
         <div className="metrics">
             <div id="categories">
-                <button className="chart-button" onClick={() => setActive("topic")}>Total Datasets per Topic</button>
-                <button className="chart-button" onClick={() => setActive("dataset_size")}>Dataset size in Bytes</button>
-                <button className="chart-button" onClick={() => setActive("file_count")}>Number of Files per Dataset</button>
-                <button className="chart-button" onClick={() => setActive("dataset_views")}>Number of Views per Dataset</button>
+                <button className="chart-button" onClick={() => setActive("content_type")}>Total Files per Content Type</button>
 
             </div>
             <div id="charts">
-                {active === "topic" &&  <DoughnutChart chart_data={datasets_per_topic} chart_labels={topics}/>}
-                {active === "dataset_size" && <TotalBarChart chart_data={dataset_size} chart_labels={dataset_ids}/>}
-                {active === "file_count" && <TotalBarChart chart_data={file_count} chart_labels={dataset_ids}/>}
-                {active === "dataset_views" && <DoughnutChart chart_data={datasets_per_topic} chart_labels={dataset_ids}/>}
+                {active === "content_type" &&  <DoughnutChart chart_data={datasets_per_topic} chart_labels={topics}/>}
             </div>
         </div>
     )

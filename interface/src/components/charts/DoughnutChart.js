@@ -11,7 +11,7 @@ const DoughnutChart = ({ chart_data, chart_labels }) => {
                         data: chart_data[0].q1,
                         barThickness: 30,
                         backgroundColor: ["rgba(102,102,102,.5)","rgba(102,71,61,.5)","rgba(190,102,75,.5)","rgba(246,164,142,.5)"],
-                        borderColor: ["#666666","#66473D","#BE664B","#F6A48Es"],
+                        borderColor: ["#666666","#66473D","#BE664B","#F6A48E"],
                         borderWidth: 3
                     }
                 ]
@@ -25,12 +25,7 @@ const DoughnutChart = ({ chart_data, chart_labels }) => {
                     position: 'bottom'
                 },
                 scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true,
-                            padding: 25
-                        }
-                    }]
+                    display:false
                 }
             }}
         />

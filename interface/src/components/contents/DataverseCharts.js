@@ -3,7 +3,7 @@ import React, {useState} from 'react';
 import '../../styles/contents.css';
 import "../../styles/chart.css";
 
-import PieChart from "../charts/DoughnutChart";
+import DoughnutChart from "../charts/DoughnutChart";
 import TotalBarChart from "../charts/TotalBarChart";
 
 /* Dummy Data */
@@ -24,13 +24,22 @@ export default function DataverseCharts() {
             <div id="categories">
                 <button className="chart-button" onClick={() => setActive("datasets")}>Total Datasets per Dataverse</button>
                 <button className="chart-button" onClick={() => setActive("size")}>Total Dataverse size in Bytes</button>
-                <button className="chart-button" onClick={() => setActive("category")}>Total Dataverses per Category</button>
-
             </div>
             <div id="charts">
-                {active === "datasets" &&  <PieChart chart_data={datasets} chart_labels={dataverses}/>}
-                {active === "size" && <TotalBarChart chart_data={sizes} chart_labels={dataverses}/>}
-                {active === "category" && <PieChart chart_data={category_data} chart_labels={category_label}/>}
+                {active === "datasets" &&
+                    <div>
+                        <p>This chart displays the total number of Datasets of each of the existing Dataverses. The information is organised by quarter.</p>
+                        <p></p>
+                        <TotalBarChart chart_data={datasets} chart_labels={dataverses}/>
+                    </div>
+                }
+                {active === "size" &&
+                <div>
+                    <p>This chart displays the total size in Bytes for each of the existing Dataversses. The information is organised by quarter.</p>
+                    <p></p>
+                    <TotalBarChart chart_data={sizes} chart_labels={dataverses}/>
+                </div>
+                }
             </div>
         </div>
     )
