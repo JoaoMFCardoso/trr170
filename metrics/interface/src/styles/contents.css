@@ -1,0 +1,86 @@
+#content {
+    top: 60px;
+    padding-bottom: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.introduction {
+    padding: 10px 0;
+}
+
+.metrics {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 15px 0;
+}
+
+.sidebar {
+    flex-grow: 1;
+    float: left;
+    display: flex;
+    flex-direction: column;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-top: 10px;
+}
+
+.sidebar .categories{
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px solid #DDD;
+    margin-bottom: .5em;
+}
+
+.sidebar .categories p, .years p, .quarters p{
+    font-weight: bold;
+    color: black;
+}
+
+.sidebar .years, .quarters{
+    display: flex;
+    flex-direction: column;
+    padding-top: 10px;
+    border-bottom: 1px solid #DDD;
+    margin-bottom: .5em;
+}
+
+.checkbox {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 4px;
+}
+
+.checkbox input {
+    margin-top: 3px;
+    margin-right: 1px;
+}
+
+.checkbox input[type=checkbox] + label{
+    color: #337ab7;
+}
+
+.checkbox input[type=checkbox]:checked + label{
+    color: #337ab7;
+    font-weight: bold;
+}
+
+#charts {
+    flex-grow: 4;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-right: 5px;
+    padding-left: 5px;
+    border : 1px solid #c55b28;
+}
+
+.chart-button {
+    background-color: transparent; /* Remove background color */
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+}
