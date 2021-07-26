@@ -142,11 +142,10 @@ export const getAllQuartersOfYearByField = (records, year, field) => {
  * Gets a set of records based on a list of years and field.
  * @param records
  * @param year
- * @param quarters
  * @param field
  * @returns {{}}
  */
-export const getRecordsByYearAndField = (records, years, quarters, field) => {
+export const getRecordsByYearAndField = (records, years, field) => {
     try {
         if(!records.length){
             throw 'records are empty';
@@ -182,11 +181,24 @@ export const buildDataTotalBarChart = (records, years, quarters, field) => {
 
       const chartData = [[], [], [], []]
 
-      const recordData = getRecordsByYearAndField(records, years, quarters, field);
+      const recordData = getRecordsByYearAndField(records, years, field);
 
       for (let i = 0; i < chartData.length; i++) {
           for(let j = 0; j < recordData.length; j++) {
               chartData[i].push(recordData[j][i]);
+          }
+      }
+
+      /* Adjust for the active quarters
+      *  By default all are active.
+      * If less than 4 quarters are active, then it's necessary to replace the quarter list with 0's according to
+      * the length of the data.
+      *  */
+      if(quarters.length < 4) {
+          for (let quarter = 1; quarter <= chartData.length; quarter++){
+              if(!quarters.includes(quarter)){
+                  chartData[quarter - 1] = new Array(chartData[quarter - 1].length).fill(0);
+              }
           }
       }
 

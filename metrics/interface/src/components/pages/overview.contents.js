@@ -6,6 +6,7 @@ import {getYears, getQuarter, buildDataTotalBarChart} from "../../utils/record.h
 
 import '../../styles/contents.css';
 import '../../styles/general.css';
+import DoughnutChart from "../charts/DoughnutChart";
 
 class OverviewContents extends Component{
     constructor(props) {
@@ -18,7 +19,7 @@ class OverviewContents extends Component{
         this.state = {
             activeCategory: "",
             activeYears : [],
-            activeQuarters : [],
+            activeQuarters : [1,2,3,4],
             categories : [
                 {
                     id : 'n_dataverses',
@@ -38,7 +39,7 @@ class OverviewContents extends Component{
                 }
             ],
             labels: [new Date().getFullYear()],
-            quarters: ['Q1','Q2','Q3','Q4'],
+            quarters: [1,2,3,4],
             data : [],
         };
     }
@@ -52,6 +53,8 @@ class OverviewContents extends Component{
             labels: this.getYears(this.props.totals),
             data : this.buildDataTotalBarChart(this.props.totals, this.state.activeYears, this.state.activeQuarters, this.state.activeCategory),
         });
+
+        this.checkQuarters();
     }
 
     handleOnChangeCategory(id){
@@ -89,6 +92,7 @@ class OverviewContents extends Component{
 
             /* Add to active quarters */
             this.state.activeQuarters.push(quarter);
+            this.state.activeQuarters.sort();
 
         } else{
             /* Remove from active quarters */
@@ -102,14 +106,39 @@ class OverviewContents extends Component{
     }
 
     uncheckCategories(activeId) {
-        this.state.categories.map(({id}, index) => {
+        this.state.categories.map(({id}) => {
             if(activeId != id) {
                 document.getElementById(id).checked = false;
             }
         })
     }
 
+    checkQuarters() {
+        for (let quarter = 1; quarter <= this.state.activeQuarters.length; quarter++){
+            if(!this.state.activeQuarters.includes(quarter)){
+                document.getElementById(quarter.toString()).checked = false;
+            }else{
+                document.getElementById(quarter.toString()).checked = true;
+            }
+        }
+    }
+
+    chartDescriptions(){
+        switch (this.state.active) {
+            case 'n_datasets':
+                return <p>Total number of Datasets over the selected year, and selected quarters.</p>;
+            case 'n_files':
+                return <p>Total number of Files over the selected year, and selected quarters.</p>;
+            case 'n_users':
+                return <p>Total number of Users over the selected year, and selected quarters.</p>;
+            default:
+                return <p>Total number of Dataverses over the selected year, and selected quarters.</p>;
+        }
+    }
+
     render() {
+
+
 
         return (
             <div id="content" className="container">
@@ -121,7 +150,7 @@ class OverviewContents extends Component{
                     <div className="sidebar">
                         <div className='categories'>
                             <p>Categories</p>
-                        {this.state.categories.map(({ id, value }, index) => {
+                        {this.state.categories.map(({ id, value }) => {
                             return (
                                     <div className="checkbox">
                                             <input
@@ -162,16 +191,17 @@ class OverviewContents extends Component{
                                             type="checkbox"
                                             id={quarter}
                                             name={quarter}
-                                            value={quarter}
+                                            value={'Q' + quarter}
                                             onChange={() => this.handleOnChangeQuarter(this.props.totals, quarter)}
                                         />
-                                        <label htmlFor={quarter}>{quarter}</label>
+                                        <label htmlFor={quarter}>{'Q' + quarter}</label>
                                     </div>
                                 );
                             })}
                         </div>
                     </div>
                     <div id="charts">
+                        {this.chartDescriptions()}
                         <TotalBarChart data={this.state.data} labels={this.state.activeYears}/>
                     </div>
                 </div>

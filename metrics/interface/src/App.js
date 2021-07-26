@@ -17,7 +17,6 @@ class App extends Component {
   render() {
     return (
       <Router>
-        <body>
         <Navigation />
         <Route exact={true} path = {['/', '/totals']} component={OverviewContents}/>
         <Route path = {'/dataverses'} component={DataverseContents}/>
@@ -25,7 +24,6 @@ class App extends Component {
         <Route path = {'/files'} component={FileContents}/>
         <Route path = {'/users'} component={UserContents}/>
         <Footer />
-        </body>
       </Router>
     );
   }
