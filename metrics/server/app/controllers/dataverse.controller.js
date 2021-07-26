@@ -5,7 +5,7 @@ const Op = db.Sequelize.Op;
 // Create and Save a new Dataverse
 exports.create = (req, res) => {
     // Validate request
-    if (!req.body.category) {
+    if (!req.body.dataverse_id) {
         res.status(400).send({
             message: "Content can not be empty!"
         });
