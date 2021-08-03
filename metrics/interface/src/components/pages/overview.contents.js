@@ -6,7 +6,6 @@ import {getYears, getQuarter, buildDataTotalBarChart} from "../../utils/record.h
 
 import '../../styles/contents.css';
 import '../../styles/general.css';
-import DoughnutChart from "../charts/DoughnutChart";
 
 class OverviewContents extends Component{
     constructor(props) {
@@ -68,7 +67,7 @@ class OverviewContents extends Component{
         this.refreshData();
     }
 
-    handleOnChangeYear(totalsData, year){
+    handleOnChangeYear(year){
 
         if(document.getElementById(year).checked){
 
@@ -86,7 +85,7 @@ class OverviewContents extends Component{
         this.refreshData();
     }
 
-    handleOnChangeQuarter(totalsData, quarter){
+    handleOnChangeQuarter(quarter){
 
         if(document.getElementById(quarter).checked){
 
@@ -124,7 +123,7 @@ class OverviewContents extends Component{
     }
 
     chartDescriptions(){
-        switch (this.state.active) {
+        switch (this.state.activeCategory) {
             case 'n_datasets':
                 return <p>Total number of Datasets over the selected year, and selected quarters.</p>;
             case 'n_files':
@@ -144,7 +143,7 @@ class OverviewContents extends Component{
             <div id="content" className="container">
                 <div className="introduction">
                     <p>The TRR 170 Dataverse Metrics</p>
-                    <p>In this page you can visualise the total numbers of Dataverses, Datasets, Files and Users in the TRR 170 Dataverse Repository.</p>
+                    <p>In this page you can visualise generic metrics related to data stored in the TRR-170 Planetary Data Portal.</p>
                 </div>
                 <div className="metrics">
                     <div className="sidebar">
@@ -175,7 +174,7 @@ class OverviewContents extends Component{
                                             id={year}
                                             name={year}
                                             value={year}
-                                            onChange={() => this.handleOnChangeYear(this.props.totals, year)}
+                                            onChange={() => this.handleOnChangeYear(year)}
                                         />
                                         <label htmlFor={year}>{year}</label>
                                     </div>
@@ -192,7 +191,7 @@ class OverviewContents extends Component{
                                             id={quarter}
                                             name={quarter}
                                             value={'Q' + quarter}
-                                            onChange={() => this.handleOnChangeQuarter(this.props.totals, quarter)}
+                                            onChange={() => this.handleOnChangeQuarter(quarter)}
                                         />
                                         <label htmlFor={quarter}>{'Q' + quarter}</label>
                                     </div>

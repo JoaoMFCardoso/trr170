@@ -14,11 +14,11 @@ const Navigation = () => {
                     <img src={logo} alt="TRR 170-DB homepage"/>
                 </Link>
                 <ul id="navbar-menu">
-                    <li className="active"><Link to="/">Overview</Link></li>
-                    <li><Link to="/dataverses">Dataverses</Link></li>
-                    <li><Link to="/datasets">Datasets</Link></li>
-                    <li><Link to="/files">Files</Link></li>
-                    <li><Link to="/users">Users</Link></li>
+                    <li className="active" key="overview"><Link to="/">Overview</Link></li>
+                    <li key="dataverses"><Link to="/dataverses">Dataverses</Link></li>
+                    <li key="datasets"><Link to="/datasets">Datasets</Link></li>
+                    <li key="files"><Link to="/files">Files</Link></li>
+                    <li key="users"><Link to="/users">Users</Link></li>
                 </ul>
             </div>
         </nav>

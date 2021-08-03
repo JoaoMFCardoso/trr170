@@ -1,101 +1,391 @@
-import React, {Component} from 'react';
-import {connect} from "react-redux";
-
-import {retrieveTopics} from "../../actions/topics";
+import React, { Component} from 'react';
+import { connect } from "react-redux";
 import {retrieveDatasets} from "../../actions/datasets";
+import {retrieveTopics} from "../../actions/topics";
 import TotalBarChart from "../charts/TotalBarChart";
 import DoughnutChart from "../charts/DoughnutChart";
+import {getDatasetIds, getTopics, getYears, getQuarter, getRecordsByTopic, getRecordsByDatasetId, buildDataTotalBarChart, buildDataDoughnutChart} from "../../utils/record.handling.methods";
 
 import '../../styles/contents.css';
 import '../../styles/general.css';
+
 
 class DatasetContents extends Component{
     constructor(props) {
         super(props);
         this.refreshData = this.refreshData.bind(this);
+        this.getTopics = getTopics.bind(this);
+        this.getDatasetIds = getDatasetIds.bind(this);
+        this.getYears = getYears.bind(this);
+        this.getQuarter = getQuarter.bind(this);
+        this.getRecordsByTopic = getRecordsByTopic.bind(this);
+        this.getRecordsByDatasetId = getRecordsByDatasetId.bind(this);
+        this.buildDataTotalBarChart = buildDataTotalBarChart.bind(this);
+        this.buildDataDoughnutChart = buildDataDoughnutChart.bind(this);
 
         this.state = {
-            active: "topic",
-            labels: [],
-            dataverses : [{1: []}, {2: []},{3: []},{4: []}],
-            datasets : [{1: []}, {2: []},{3: []},{4: []}],
-            files : [{1: []}, {2: []},{3: []},{4: []}],
-            users : [{1: []}, {2: []},{3: []},{4: []}],
+            activeCategory : "",
+            activeTopic : "",
+            activeDataset : "",
+            activeYears : [],
+            activeQuarters : [1,2,3,4],
+            topicList : [],
+            datasetList : [],
+            categories : [
+                {
+                    id : 'n_datasets',
+                    value : 'Datasets per Topic'
+                },
+                {
+                    id : 'n_size',
+                    value : 'Dataset Size'
+                },
+                {
+                    id : 'n_filecount',
+                    value : 'Files per Dataset'
+                },
+                {
+                    id : 'n_views',
+                    value : 'Views per Dataset'
+                }
+            ],
+            labels: [new Date().getFullYear()],
+            quarters: [1,2,3,4],
+            data : [],
         };
     }
 
     componentDidMount() {
-        this.props.retrieveTopics();
         this.props.retrieveDatasets();
+        this.props.retrieveTopics();
     }
 
     refreshData() {
-        const data = this.getData(this.props.totals);
+        let chartData = null;
+        let yearData = null;
+        let records = null;
+        switch (this.state.activeCategory){
+            case 'n_datasets':
+                yearData = this.getYears(this.props.topics);
+
+                /* Type of chart selection */
+                if(this.state.activeTopic === 'allTopics'){ /* Doughnut Chart just showcasing one year */
+                    chartData = this.buildDataDoughnutChart(this.props.topics, this.state.activeYears, this.state.topicList, 'topic', this.state.activeCategory);
+                }else{ /* Total Bar Chart showcasing all active years */
+                    records = this.getRecordsByTopic(this.props.topics, this.state.activeTopic);
+                    chartData = this.buildDataTotalBarChart(records, this.state.activeYears, this.state.activeQuarters, this.state.activeCategory);
+                }
+
+                break;
+            case 'n_views':
+                yearData = this.getYears(this.props.datasets);
+
+                /* Type of chart selection */
+                if(this.state.activeDataset === 'allDatasets'){ /* Doughnut Chart just showcasing one year */
+                    chartData = this.buildDataDoughnutChart(this.props.datasets, this.state.activeYears, this.state.datasetList, 'dataset_id', this.state.activeCategory);
+                }else{ /* Total Bar Chart showcasing all active years */
+                    records = this.getRecordsByDatasetId(this.props.datasets, this.state.activeDataset);
+                    chartData = this.buildDataTotalBarChart(records, this.state.activeYears, this.state.activeQuarters, this.state.activeCategory);
+                }
+
+                break;
+            default:
+                yearData = this.getYears(this.props.datasets);
+                records = this.getRecordsByDatasetId(this.props.datasets, this.state.activeDataset);
+                chartData = this.buildDataTotalBarChart(records, this.state.activeYears, this.state.activeQuarters, this.state.activeCategory);
+                break;
+        }
+        
+        this.setState({
+            topicList : this.getTopics(this.props.topics),
+            datasetList : this.getDatasetIds(this.props.datasets),
+            labels : yearData,
+            data : chartData,
+        });
+
+        this.checkQuarters();
     }
 
-    getData(totals) {
-        const labels = [];
+    handleOnChange(id, type){
 
-        totals.map(total => {
-            const date = new Date(total.createdAt);
-            const year = date.getFullYear();
+        /* Differentiate based on type
+        * 0 - category
+        * 1 - topic
+        * 2 - datasets
+        * */
+        switch (type) {
+            case 1: /* topic */
+                /* Add to active Topic and uncheck all others */
+                this.state.activeTopic = id;
+                break;
+            case 2: /* datasets */
+                /* Add to active Topic and uncheck all others */
+                this.state.activeDataset = id;
+                break;
+            default: /* category */
+                /* Change active category and uncheck all others */
+                this.state.activeCategory = id;
+                break;
+        }
+        this.uncheck(id, type);
+        this.refreshData();
+    }
 
-            /* Add year to labels */
-            if(!(labels.includes(year))){
-                labels.push(year);
+    handleOnChangeYear(year){
+
+        if(document.getElementById(year).checked){
+
+            /* Add to active years */
+            this.state.activeYears.push(year);
+
+        } else{
+            /* Remove from active years */
+            const index = this.state.activeYears.indexOf(year);
+            if (index > -1) {
+                this.state.activeYears.splice(index, 1);
             }
+        }
 
-            /* Get Quarter */
-            const quarter = this.getQuarter(date);
-
-            /* Fill Data */
-            this.state.dataverses[quarter-1][quarter].push(total.n_dataverses);
-            this.state.datasets[quarter-1][quarter].push(total.n_datasets);
-            this.state.files[quarter-1][quarter].push(total.n_files);
-            this.state.users[quarter-1][quarter].push(total.n_users);
-
-        })
-
-        /* Sort labels */
-        this.state.labels = labels;
-
+        this.refreshData();
     }
 
-    getQuarter(d) {
-        d = d || new Date(); // If no date supplied, use today
-        var q = [4,1,2,3];
-        return q[Math.floor(d.getMonth() / 3)];
+    handleOnChangeQuarter(quarter){
+
+        if(document.getElementById(quarter).checked){
+
+            /* Add to active quarters */
+            this.state.activeQuarters.push(quarter);
+            this.state.activeQuarters.sort();
+
+        } else{
+            /* Remove from active quarters */
+            const index = this.state.activeQuarters.indexOf(quarter);
+            if (index > -1) {
+                this.state.activeQuarters.splice(index, 1);
+            }
+        }
+
+        this.refreshData();
+    }
+
+    uncheck(activeId, type) {
+        /* Differentiate based on type
+        * 0 - category
+        * 1 - topic
+        * 2 - datasets
+        * */
+        switch (type){
+            case 1: // topic
+                /* Uncheck the allTopics if checked */
+                if(activeId !== 'allTopics'){
+                    document.getElementById('allTopics').checked = false;
+                }
+
+                /* Uncheck all other topics if checked */
+                this.state.topicList.map(id => {
+                    if(activeId !== id) {
+                        document.getElementById(id).checked = false;
+                    }
+                })
+                break;
+            case 2: //dataset
+                /* Uncheck the allDatasets if checked */
+                if(activeId !== 'allDatasets' && this.state.activeCategory === 'n_views'){
+                    document.getElementById('allDatasets').checked = false;
+                }
+
+                /* Uncheck all other topics if checked */
+                this.state.datasetList.map( id => {
+                    if(activeId !== id) {
+                        document.getElementById(id).checked = false;
+                    }
+                })
+                break;
+            default: // category
+                this.state.categories.map(({id}) => {
+                    if(activeId !== id) {
+                        document.getElementById(id).checked = false;
+                    }
+                })
+                break;
+        }
+    }
+
+    checkQuarters() {
+        for (let quarter = 1; quarter <= this.state.activeQuarters.length; quarter++){
+            if(!this.state.activeQuarters.includes(quarter)){
+                document.getElementById(quarter.toString()).checked = false;
+            }else{
+                document.getElementById(quarter.toString()).checked = true;
+            }
+        }
+    }
+
+    getChartMessage(){
+        let message = "";
+        switch(this.state.activeCategory){
+            case "n_size":
+                message = "Total Size in Bytes of a Dataset over the selected year, and selected quarters.";
+                break;
+            case "n_filecount":
+                message = "Total number of Files of a Dataset over the selected year, and selected quarters.";
+                break;
+            case "n_views":
+                message = "Total number of Views of a Dataset over the selected year, and selected quarters.";
+                break;
+            default:
+                message = "Total number of Datasets per Topic over the selected year, and selected quarters.";
+                break;
+        }
+
+        return message;
+    }
+
+    getChart() {
+        switch(this.state.activeCategory){
+            case "n_size":
+                return <TotalBarChart data={this.state.data} labels={this.state.activeYears}/>;
+            case "n_filecount":
+                return <TotalBarChart data={this.state.data} labels={this.state.activeYears}/>;
+            case "n_views":
+                if(this.state.activeDataset === 'allDatasets'){
+                    return <DoughnutChart data={this.state.data} labels={this.state.datasetList}/>;
+                }else{
+                    return <TotalBarChart data={this.state.data} labels={this.state.activeYears}/>;
+                }
+            default:
+                if(this.state.activeTopic === 'allTopics'){
+                    return <DoughnutChart data={this.state.data} labels={this.state.topicList}/>;
+                }else{
+                    return <TotalBarChart data={this.state.data} labels={this.state.activeYears}/>;
+                }
+
+        }
     }
 
     render() {
-        const totals = this.props.totals;
-
-        this.getData(totals);
-
-        const topics = ["Astronomy", "Planetary materials", "Titan", "Planetary surface data", "Late heavy bombardment"];
-        const dataset_ids = ["doi:10.35003/SMHEIM", "doi:10.35003/IDUP4R", "doi:10.35003/UFXL7B", "doi:10.35003/WPRF5U", "doi:10.35003/MR6ZDS"];
-        const datasets_per_topic = [{1: [2,4,7,2,5]}, {2: [6,7,7,10,5]},{3: [8,4,5,10,5]},{4: [11,5,6,4,5]}];
-        const dataset_size = [{1: [1027085,603391,53293,41722,102535]}, {2: [1027095,670391,583293,42722,1002535]},{3: [1023095,740391,60293,41722,1002535]},{4: [1023095,803391,63293,43722,1005535]}];
-        const file_count = [{1: [18,1,1,1,1]}, {2: [17,1,2,1,3]},{3: [20,1,2,2,4]},{4: [23,1,3,2,6]}];
 
         return (
             <div id="content" className="container">
                 <div className="introduction">
                     <p>The TRR 170 Dataverse Metrics</p>
-                    <p>In here we showcase Dataset specific metrics.</p>
+                    <p>In this page you can visualise metrics related to the Datasets stored in the TRR-170 Planetary Data Portal.</p>
                 </div>
                 <div className="metrics">
-                    <div id="categories">
-                        <button className="chart-button" onClick={() => this.setState({ active: "topic"})}>Total Datasets per Topic</button>
-                        <button className="chart-button" onClick={() => this.setState({ active: "dataset_size"})}>Dataset size in Bytes</button>
-                        <button className="chart-button" onClick={() => this.setState({ active: "file_count"})}>Number of Files per Dataset</button>
-                        <button className="chart-button" onClick={() => this.setState({ active: "dataset_views"})}>Number of Views per Dataset</button>
+                    <div className="sidebar">
+                        <div className='categories'>
+                            <p>Categories</p>
+                            {this.state.categories.map(({ id, value }) => {
+                                return (
+                                    <div className="checkbox">
+                                        <input
+                                            type="checkbox"
+                                            id={id}
+                                            name={id}
+                                            value={value}
+                                            onChange={() => this.handleOnChange(id, 0)}
+                                        />
+                                        <label htmlFor={id}>{value}</label>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                        {this.state.activeCategory === 'n_datasets' &&
+                            <div className='topics'>
+                            <p>Topics</p>
+                            <div className="checkbox">
+                                <input
+                                    type="checkbox"
+                                    id='allTopics'
+                                    name='allTopics'
+                                    value='All'
+                                    onChange={() => this.handleOnChange('allTopics', 1)}
+                                />
+                                <label htmlFor='allTopics'>All</label>
+                            </div>
+                            {this.state.topicList.map(topic => {
+                                return (
+                                    <div className="checkbox">
+                                        <input
+                                            type="checkbox"
+                                            id={topic}
+                                            name={topic}
+                                            value={topic}
+                                            onChange={() => this.handleOnChange(topic, 1)}
+                                        />
+                                        <label htmlFor={topic}>{topic}</label>
+                                    </div>
+                                );
+                            })}
+                        </div>}
+                        {this.state.activeCategory !== 'n_datasets' && this.state.activeCategory !== '' &&
+                        <div className='datasets'>
+                            <p>Datasets</p>
+                            {this.state.activeCategory === 'n_views' &&
+                                <div className="checkbox">
+                                    <input
+                                        type="checkbox"
+                                        id='allDatasets'
+                                        name='allDatasets'
+                                        value='All'
+                                        onChange={() => this.handleOnChange('allDatasets', 2)}
+                                    />
+                                    <label htmlFor='allDatasets'>All</label>
+                                </div>
+                                }
+                            {this.state.datasetList.map(datasetId => {
+                                return (
+                                    <div className="checkbox">
+                                        <input
+                                            type="checkbox"
+                                            id={datasetId}
+                                            name={datasetId}
+                                            value={datasetId}
+                                            onChange={() => this.handleOnChange(datasetId, 2)}
+                                        />
+                                        <label htmlFor={datasetId}>{datasetId}</label>
+                                    </div>
+                                );
+                            })}
+                        </div>}
+                        <div className='years'>
+                            <p>Years</p>
+                            {this.state.labels.map(year => {
+                                return (
+                                    <div className="checkbox">
+                                        <input
+                                            type="checkbox"
+                                            id={year}
+                                            name={year}
+                                            value={year}
+                                            onChange={() => this.handleOnChangeYear(year)}
+                                        />
+                                        <label htmlFor={year}>{year}</label>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                        <div className='quarters'>
+                            <p>Quarters</p>
+                            {this.state.quarters.map(quarter => {
+                                return (
+                                    <div className="checkbox">
+                                        <input
+                                            type="checkbox"
+                                            id={quarter}
+                                            name={quarter}
+                                            value={'Q' + quarter}
+                                            onChange={() => this.handleOnChangeQuarter(quarter)}
+                                        />
+                                        <label htmlFor={quarter}>{'Q' + quarter}</label>
+                                    </div>
+                                );
+                            })}
+                        </div>
                     </div>
                     <div id="charts">
-                        {this.state.active === "topic" &&  <DoughnutChart chart_data={datasets_per_topic} chart_labels={topics}/>}
-                        {this.state.active === "dataset_size" && <TotalBarChart chart_data={dataset_size} chart_labels={dataset_ids}/>}
-                        {this.state.active === "file_count" && <TotalBarChart chart_data={file_count} chart_labels={dataset_ids}/>}
-                        {this.state.active === "dataset_views" && <DoughnutChart chart_data={datasets_per_topic} chart_labels={dataset_ids}/>}
+                        <p>{this.getChartMessage()}</p>
+                        {this.getChart()}
                     </div>
                 </div>
             </div>
@@ -105,8 +395,10 @@ class DatasetContents extends Component{
 
 const mapStateToProps = (state) => {
     return {
-        totals: state.totals,
+        datasets: state.datasets,
+        topics: state.topics,
     };
 };
 
-export default connect(mapStateToProps, { retrieveTopics , retrieveDatasets})(DatasetContents);
+export default connect(mapStateToProps, { retrieveDatasets, retrieveTopics})(DatasetContents);
+

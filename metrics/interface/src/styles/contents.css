@@ -35,12 +35,12 @@
     margin-bottom: .5em;
 }
 
-.sidebar .categories p, .years p, .quarters p{
+.sidebar p{
     font-weight: bold;
     color: black;
 }
 
-.sidebar .years, .quarters{
+.sidebar .years, .quarters, .dataverses, .contentTypes, .affiliations{
     display: flex;
     flex-direction: column;
     padding-top: 10px;

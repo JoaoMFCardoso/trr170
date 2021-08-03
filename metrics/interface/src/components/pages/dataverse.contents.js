@@ -1,101 +1,242 @@
 import React, { Component} from 'react';
 import { connect } from "react-redux";
-import {retrieveTotals} from "../../actions/totals";
+import {retrieveDataverses} from "../../actions/dataverses";
 import TotalBarChart from "../charts/TotalBarChart";
+import {getYears, getDataverseIds, getQuarter, getRecordsByDataverseId, buildDataTotalBarChart} from "../../utils/record.handling.methods";
 
 import '../../styles/contents.css';
 import '../../styles/general.css';
+
 
 class DataverseContents extends Component{
     constructor(props) {
         super(props);
         this.refreshData = this.refreshData.bind(this);
+        this.getYears = getYears.bind(this);
+        this.getDataverseIds = getDataverseIds.bind(this);
+        this.getQuarter = getQuarter.bind(this);
+        this.getRecordsByDataverseId = getRecordsByDataverseId.bind(this);
+        this.buildDataTotalBarChart = buildDataTotalBarChart.bind(this);
 
         this.state = {
-            active: "datasets",
-            labels: [],
-            dataverses : [{1: []}, {2: []},{3: []},{4: []}],
-            datasets : [{1: []}, {2: []},{3: []},{4: []}],
-            files : [{1: []}, {2: []},{3: []},{4: []}],
-            users : [{1: []}, {2: []},{3: []},{4: []}],
+            activeCategory: "",
+            activeYears : [],
+            activeDataverse : "",
+            activeQuarters : [1,2,3,4],
+            dataverseIds : [],
+            categories : [
+                {
+                    id : 'n_datasets',
+                    value : 'Total Datasets'
+                },
+                {
+                    id : 'n_size',
+                    value : 'Dataverse Size'
+                }
+            ],
+            labels: [new Date().getFullYear()],
+            quarters: [1,2,3,4],
+            data : [],
         };
     }
 
     componentDidMount() {
-        this.props.retrieveTotals();
+        this.props.retrieveDataverses();
     }
 
     refreshData() {
-        const data = this.getData(this.props.totals);
+        this.state.data = this.getRecordsByDataverseId(this.props.dataverses, this.state.activeDataverse);
+
+        this.setState({
+            dataverseIds : this.getDataverseIds(this.props.dataverses),
+            labels : this.getYears(this.props.dataverses),
+            data : this.buildDataTotalBarChart(this.state.data, this.state.activeYears, this.state.activeQuarters, this.state.activeCategory),
+        });
+
+        this.checkQuarters();
     }
 
-    getData(totals) {
-        const labels = [];
+    handleOnChangeCategory(id){
 
-        totals.map(total => {
-            const date = new Date(total.createdAt);
-            const year = date.getFullYear();
+        /* Change active chart */
+        this.state.activeCategory = id;
 
-            /* Add year to labels */
-            if(!(labels.includes(year))){
-                labels.push(year);
+        /* Uncheck all others */
+        this.uncheckCategories(id);
+
+        this.refreshData();
+    }
+
+    handleOnChangeDataverses(dataverseId){
+
+        /* Add to active dataverse */
+        this.state.activeDataverse = dataverseId;
+
+        /* Uncheck all others */
+        this.uncheckDataverses(dataverseId);
+
+        this.refreshData();
+    }
+
+    handleOnChangeYear(year){
+
+        if(document.getElementById(year).checked){
+
+            /* Add to active years */
+            this.state.activeYears.push(year);
+
+        } else{
+            /* Remove from active years */
+            const index = this.state.activeYears.indexOf(year);
+            if (index > -1) {
+                this.state.activeYears.splice(index, 1);
             }
+        }
 
-            /* Get Quarter */
-            const quarter = this.getQuarter(date);
-
-            /* Fill Data */
-            this.state.dataverses[quarter-1][quarter].push(total.n_dataverses);
-            this.state.datasets[quarter-1][quarter].push(total.n_datasets);
-            this.state.files[quarter-1][quarter].push(total.n_files);
-            this.state.users[quarter-1][quarter].push(total.n_users);
-
-        })
-
-        /* Sort labels */
-        this.state.labels = labels;
-
+        this.refreshData();
     }
 
-    getQuarter(d) {
-        d = d || new Date(); // If no date supplied, use today
-        var q = [4,1,2,3];
-        return q[Math.floor(d.getMonth() / 3)];
+    handleOnChangeQuarter(quarter){
+
+        if(document.getElementById(quarter).checked){
+
+            /* Add to active quarters */
+            this.state.activeQuarters.push(quarter);
+            this.state.activeQuarters.sort();
+
+        } else{
+            /* Remove from active quarters */
+            const index = this.state.activeQuarters.indexOf(quarter);
+            if (index > -1) {
+                this.state.activeQuarters.splice(index, 1);
+            }
+        }
+
+        this.refreshData();
+    }
+
+    uncheckCategories(activeId) {
+        this.state.categories.map(({id}) => {
+            //TODO If the element has the same name as any of the ids in the html, then it might be necessary to verify if the element is the child of a sidebar div.
+            // For example, if the activeId is root, then all hell will break loose.
+            if(activeId != id) {
+                document.getElementById(id).checked = false;
+            }
+        })
+    }
+
+    uncheckDataverses(activeId) {
+        this.state.dataverseIds.map(id => {
+            if(activeId != id) {
+                document.getElementById(id).checked = false;
+            }
+        })
+    }
+
+    checkQuarters() {
+        for (let quarter = 1; quarter <= this.state.activeQuarters.length; quarter++){
+            if(!this.state.activeQuarters.includes(quarter)){
+                document.getElementById(quarter.toString()).checked = false;
+            }else{
+                document.getElementById(quarter.toString()).checked = true;
+            }
+        }
+    }
+
+    chartDescriptions(){
+        switch (this.state.activeCategory) {
+            case 'n_size':
+                return "Total Dataverse size in Bytes over the selected year, and selected quarters.";
+            default:
+                return "Total number of Datasets per Dataverse over the selected year, and selected quarters.";
+        }
     }
 
     render() {
-        const datasets = [{1: []}, {2: []},{3: []},{4: []}];
-        const sizes = [{1: []}, {2: []},{3: []},{4: []}];
-        const dataverses = [];
 
-        const totals = this.props.totals;
 
-        this.getData(totals);
 
         return (
             <div id="content" className="container">
                 <div className="introduction">
                     <p>The TRR 170 Dataverse Metrics</p>
-                    <p>In here we showcase Dataverse specific metrics.</p>
+                    <p>In this page you can visualise metrics related to the Dataverses stored in the TRR-170 Planetary Data Portal.</p>
                 </div>
                 <div className="metrics">
-                    <div id="categories">
-                        <button className="chart-button" onClick={() => this.setState({ active: "datasets"})}>Total Datasets per Dataverse</button>
-                        <button className="chart-button" onClick={() => this.setState({ active: "size"})}>Total Dataverse size in Bytes</button>
+                    <div className="sidebar">
+                        <div className='categories'>
+                            <p>Categories</p>
+                            {this.state.categories.map(({ id, value }) => {
+                                return (
+                                    <div className="checkbox">
+                                        <input
+                                            type="checkbox"
+                                            id={id}
+                                            name={id}
+                                            value={value}
+                                            onChange={() => this.handleOnChangeCategory(id)}
+                                        />
+                                        <label htmlFor={id}>{value}</label>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                        <div className='dataverses'>
+                            <p>Dataverses</p>
+                            {this.state.dataverseIds.map(dataverseId => {
+                                return (
+                                    <div className="checkbox">
+                                        <input
+                                            type="checkbox"
+                                            id={dataverseId}
+                                            name={dataverseId}
+                                            value={dataverseId}
+                                            onChange={() => this.handleOnChangeDataverses(dataverseId)}
+                                        />
+                                        <label htmlFor={dataverseId}>{dataverseId}</label>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                        <div className='years'>
+                            <p>Years</p>
+                            {this.state.labels.map(year => {
+                                return (
+                                    <div className="checkbox">
+                                        <input
+                                            type="checkbox"
+                                            id={year}
+                                            name={year}
+                                            value={year}
+                                            onChange={() => this.handleOnChangeYear(year)}
+                                        />
+                                        <label htmlFor={year}>{year}</label>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                        <div className='quarters'>
+                            <p>Quarters</p>
+                            {this.state.quarters.map(quarter => {
+                                return (
+                                    <div className="checkbox">
+                                        <input
+                                            type="checkbox"
+                                            id={quarter}
+                                            name={quarter}
+                                            value={'Q' + quarter}
+                                            onChange={() => this.handleOnChangeQuarter(quarter)}
+                                        />
+                                        <label htmlFor={quarter}>{'Q' + quarter}</label>
+                                    </div>
+                                );
+                            })}
+                        </div>
                     </div>
                     <div id="charts">
-                        {this.state.active === "datasets" &&
-                        <div>
-                            <p>This chart displays the total number of Datasets of each of the existing Dataverses. The information is organised by quarter.</p>
-                            <TotalBarChart chart_data={datasets} chart_labels={dataverses}/>
-                        </div>
-                        }
-                        {this.state.active === "size" &&
-                        <div>
-                            <p>This chart displays the total size in Bytes for each of the existing Dataversses. The information is organised by quarter.</p>
-                            <TotalBarChart chart_data={sizes} chart_labels={dataverses}/>
-                        </div>
-                        }
+                        <p>{this.chartDescriptions()}</p>
+                        <p><b>The active Dataverse:</b> {this.state.activeDataverse}</p>
+                        <TotalBarChart data={this.state.data} labels={this.state.activeYears}/>
                     </div>
                 </div>
             </div>
@@ -105,8 +246,9 @@ class DataverseContents extends Component{
 
 const mapStateToProps = (state) => {
     return {
-        totals: state.totals,
+        dataverses: state.dataverses,
     };
 };
 
-export default connect(mapStateToProps, { retrieveTotals})(DataverseContents);
+export default connect(mapStateToProps, { retrieveDataverses})(DataverseContents);
+
