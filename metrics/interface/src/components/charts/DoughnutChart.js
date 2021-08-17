@@ -1,7 +1,7 @@
 import React from 'react'
 import {Doughnut} from 'react-chartjs-2'
 
-const DoughnutChart = ({ data, labels }) => {
+const DoughnutChart = ({ data, labels, backgroundColor, borderColor}) => {
     return(
         <Doughnut
             data={{
@@ -10,8 +10,8 @@ const DoughnutChart = ({ data, labels }) => {
                     {
                         data: data,
                         barThickness: 30,
-                        backgroundColor: ["rgba(102,102,102,.5)","rgba(102,71,61,.5)","rgba(190,102,75,.5)","rgba(246,164,142,.5)"],
-                        borderColor: ["#666666","#66473D","#BE664B","#F6A48E"],
+                        backgroundColor: backgroundColor,
+                        borderColor: borderColor,
                         borderWidth: 3
                     }
                 ]

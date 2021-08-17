@@ -5,6 +5,7 @@ import {retrieveTopics} from "../../actions/topics";
 import TotalBarChart from "../charts/TotalBarChart";
 import DoughnutChart from "../charts/DoughnutChart";
 import {getDatasetIds, getTopics, getYears, getQuarter, getRecordsByTopic, getRecordsByDatasetId, buildDataTotalBarChart, buildDataDoughnutChart} from "../../utils/record.handling.methods";
+import {chartPaletteGenerator} from "../../utils/palette.generator";
 
 import '../../styles/contents.css';
 import '../../styles/general.css';
@@ -22,12 +23,14 @@ class DatasetContents extends Component{
         this.getRecordsByDatasetId = getRecordsByDatasetId.bind(this);
         this.buildDataTotalBarChart = buildDataTotalBarChart.bind(this);
         this.buildDataDoughnutChart = buildDataDoughnutChart.bind(this);
+        this.chartPaletteGenerator = chartPaletteGenerator.bind(this);
 
         this.state = {
             activeCategory : "",
             activeTopic : "",
             activeDataset : "",
             activeYears : [],
+            singleYearMode : false,
             activeQuarters : [1,2,3,4],
             topicList : [],
             datasetList : [],
@@ -52,6 +55,8 @@ class DatasetContents extends Component{
             labels: [new Date().getFullYear()],
             quarters: [1,2,3,4],
             data : [],
+            backgroundColor : [],
+            borderColor : [],
         };
     }
 
@@ -64,6 +69,7 @@ class DatasetContents extends Component{
         let chartData = null;
         let yearData = null;
         let records = null;
+
         switch (this.state.activeCategory){
             case 'n_datasets':
                 yearData = this.getYears(this.props.topics);
@@ -95,12 +101,16 @@ class DatasetContents extends Component{
                 chartData = this.buildDataTotalBarChart(records, this.state.activeYears, this.state.activeQuarters, this.state.activeCategory);
                 break;
         }
-        
+
+        const palette = this.chartPaletteGenerator(chartData.length);
+
         this.setState({
             topicList : this.getTopics(this.props.topics),
             datasetList : this.getDatasetIds(this.props.datasets),
             labels : yearData,
             data : chartData,
+            backgroundColor : palette.backgroundColor,
+            borderColor : palette.borderColor,
         });
 
         this.checkQuarters();
@@ -117,10 +127,20 @@ class DatasetContents extends Component{
             case 1: /* topic */
                 /* Add to active Topic and uncheck all others */
                 this.state.activeTopic = id;
+                if(id === 'allTopics'){
+                    this.state.singleYearMode = true;
+                }else{
+                    this.state.singleYearMode = false;
+                }
                 break;
             case 2: /* datasets */
                 /* Add to active Topic and uncheck all others */
                 this.state.activeDataset = id;
+                if(id === 'allDatasets'){
+                    this.state.singleYearMode = true;
+                }else{
+                    this.state.singleYearMode = false;
+                }
                 break;
             default: /* category */
                 /* Change active category and uncheck all others */
@@ -132,17 +152,32 @@ class DatasetContents extends Component{
     }
 
     handleOnChangeYear(year){
+        if(this.state.singleYearMode){
+            /* The single year mode behaviour
+        * When certain categories and topics or datasets are selected only the selected year should be added to the active years.
+        * The remainder should be removed. */
 
-        if(document.getElementById(year).checked){
+            // Uncheck all other years in the active years
+            this.uncheck(year, 3);
 
-            /* Add to active years */
-            this.state.activeYears.push(year);
+            // Add to active years
+            this.state.activeYears = [year];
 
-        } else{
-            /* Remove from active years */
-            const index = this.state.activeYears.indexOf(year);
-            if (index > -1) {
-                this.state.activeYears.splice(index, 1);
+        }else{
+            /* The standard behaviour
+        * Adding or removing years to the active years state according to selection */
+
+            if(document.getElementById(year).checked){
+
+                /* Add to active years */
+                this.state.activeYears.push(year);
+
+            } else{
+                /* Remove from active years */
+                const index = this.state.activeYears.indexOf(year);
+                if (index > -1) {
+                    this.state.activeYears.splice(index, 1);
+                }
             }
         }
 
@@ -173,6 +208,7 @@ class DatasetContents extends Component{
         * 0 - category
         * 1 - topic
         * 2 - datasets
+        * 3 - years
         * */
         switch (type){
             case 1: // topic
@@ -197,6 +233,13 @@ class DatasetContents extends Component{
                 /* Uncheck all other topics if checked */
                 this.state.datasetList.map( id => {
                     if(activeId !== id) {
+                        document.getElementById(id).checked = false;
+                    }
+                })
+                break;
+            case 3: // years
+                this.state.activeYears.map(id => {
+                    if(activeId !== id && document.getElementById(id) !== null ) {
                         document.getElementById(id).checked = false;
                     }
                 })
@@ -243,23 +286,20 @@ class DatasetContents extends Component{
 
     getChart() {
         switch(this.state.activeCategory){
-            case "n_size":
-                return <TotalBarChart data={this.state.data} labels={this.state.activeYears}/>;
-            case "n_filecount":
-                return <TotalBarChart data={this.state.data} labels={this.state.activeYears}/>;
+            case "n_datasets":
+                if(this.state.activeTopic === 'allTopics'){
+                    return <DoughnutChart data={this.state.data} labels={this.state.topicList} backgroundColor={this.state.backgroundColor} borderColor={this.state.borderColor}/>;
+                }else{
+                    return <TotalBarChart data={this.state.data} labels={this.state.activeYears}  backgroundColor={this.state.backgroundColor} borderColor={this.state.borderColor}/>;
+                }
             case "n_views":
                 if(this.state.activeDataset === 'allDatasets'){
-                    return <DoughnutChart data={this.state.data} labels={this.state.datasetList}/>;
+                    return <DoughnutChart data={this.state.data} labels={this.state.datasetList} backgroundColor={this.state.backgroundColor} borderColor={this.state.borderColor}/>;
                 }else{
-                    return <TotalBarChart data={this.state.data} labels={this.state.activeYears}/>;
+                    return <TotalBarChart data={this.state.data} labels={this.state.activeYears}  backgroundColor={this.state.backgroundColor} borderColor={this.state.borderColor}/>;
                 }
             default:
-                if(this.state.activeTopic === 'allTopics'){
-                    return <DoughnutChart data={this.state.data} labels={this.state.topicList}/>;
-                }else{
-                    return <TotalBarChart data={this.state.data} labels={this.state.activeYears}/>;
-                }
-
+                return <TotalBarChart data={this.state.data} labels={this.state.activeYears}  backgroundColor={this.state.backgroundColor} borderColor={this.state.borderColor}/>;
         }
     }
 
