@@ -4,7 +4,18 @@ import {retrieveDatasets} from "../../actions/datasets";
 import {retrieveTopics} from "../../actions/topics";
 import TotalBarChart from "../charts/TotalBarChart";
 import DoughnutChart from "../charts/DoughnutChart";
-import {getDatasetIds, getTopics, getYears, getQuarter, getRecordsByTopic, getRecordsByDatasetId, buildDataTotalBarChart, buildDataDoughnutChart} from "../../utils/record.handling.methods";
+import {
+    getActiveYearIndex,
+    getDatasetIds,
+    getTopics,
+    getYears,
+    getQuarter,
+    getRecordsByTopic,
+    getRecordsByDatasetId,
+    buildDataTotalBarChart,
+    buildDataDoughnutChart
+} from "../../utils/record.handling.methods";
+import {checkQuarters, handleOnChange} from "../../utils/handlers";
 import {chartPaletteGenerator} from "../../utils/palette.generator";
 
 import '../../styles/contents.css';
@@ -15,6 +26,7 @@ class DatasetContents extends Component{
     constructor(props) {
         super(props);
         this.refreshData = this.refreshData.bind(this);
+        this.getActiveYearIndex = getActiveYearIndex.bind(this);
         this.getTopics = getTopics.bind(this);
         this.getDatasetIds = getDatasetIds.bind(this);
         this.getYears = getYears.bind(this);
@@ -24,6 +36,8 @@ class DatasetContents extends Component{
         this.buildDataTotalBarChart = buildDataTotalBarChart.bind(this);
         this.buildDataDoughnutChart = buildDataDoughnutChart.bind(this);
         this.chartPaletteGenerator = chartPaletteGenerator.bind(this);
+        this.handleOnChange = handleOnChange.bind(this);
+        this.checkQuarters = checkQuarters.bind(this);
 
         this.state = {
             activeCategory : "",
@@ -34,7 +48,7 @@ class DatasetContents extends Component{
             activeQuarters : [1,2,3,4],
             topicList : [],
             datasetList : [],
-            categories : [
+            categoryList : [
                 {
                     id : 'n_datasets',
                     value : 'Datasets per Topic'
@@ -113,155 +127,13 @@ class DatasetContents extends Component{
             borderColor : palette.borderColor,
         });
 
-        this.checkQuarters();
+        this.checkQuarters(document, this.state);
     }
 
-    handleOnChange(id, type){
-
-        /* Differentiate based on type
-        * 0 - category
-        * 1 - topic
-        * 2 - datasets
-        * */
-        switch (type) {
-            case 1: /* topic */
-                /* Add to active Topic and uncheck all others */
-                this.state.activeTopic = id;
-                if(id === 'allTopics'){
-                    this.state.singleYearMode = true;
-                }else{
-                    this.state.singleYearMode = false;
-                }
-                break;
-            case 2: /* datasets */
-                /* Add to active Topic and uncheck all others */
-                this.state.activeDataset = id;
-                if(id === 'allDatasets'){
-                    this.state.singleYearMode = true;
-                }else{
-                    this.state.singleYearMode = false;
-                }
-                break;
-            default: /* category */
-                /* Change active category and uncheck all others */
-                this.state.activeCategory = id;
-                break;
-        }
-        this.uncheck(id, type);
-        this.refreshData();
-    }
-
-    handleOnChangeYear(year){
-        if(this.state.singleYearMode){
-            /* The single year mode behaviour
-        * When certain categories and topics or datasets are selected only the selected year should be added to the active years.
-        * The remainder should be removed. */
-
-            // Uncheck all other years in the active years
-            this.uncheck(year, 3);
-
-            // Add to active years
-            this.state.activeYears = [year];
-
-        }else{
-            /* The standard behaviour
-        * Adding or removing years to the active years state according to selection */
-
-            if(document.getElementById(year).checked){
-
-                /* Add to active years */
-                this.state.activeYears.push(year);
-
-            } else{
-                /* Remove from active years */
-                const index = this.state.activeYears.indexOf(year);
-                if (index > -1) {
-                    this.state.activeYears.splice(index, 1);
-                }
-            }
-        }
+    handleOnChangeLocal(id, type){
+        this.handleOnChange(id, type, document, this.state);
 
         this.refreshData();
-    }
-
-    handleOnChangeQuarter(quarter){
-
-        if(document.getElementById(quarter).checked){
-
-            /* Add to active quarters */
-            this.state.activeQuarters.push(quarter);
-            this.state.activeQuarters.sort();
-
-        } else{
-            /* Remove from active quarters */
-            const index = this.state.activeQuarters.indexOf(quarter);
-            if (index > -1) {
-                this.state.activeQuarters.splice(index, 1);
-            }
-        }
-
-        this.refreshData();
-    }
-
-    uncheck(activeId, type) {
-        /* Differentiate based on type
-        * 0 - category
-        * 1 - topic
-        * 2 - datasets
-        * 3 - years
-        * */
-        switch (type){
-            case 1: // topic
-                /* Uncheck the allTopics if checked */
-                if(activeId !== 'allTopics'){
-                    document.getElementById('allTopics').checked = false;
-                }
-
-                /* Uncheck all other topics if checked */
-                this.state.topicList.map(id => {
-                    if(activeId !== id) {
-                        document.getElementById(id).checked = false;
-                    }
-                })
-                break;
-            case 2: //dataset
-                /* Uncheck the allDatasets if checked */
-                if(activeId !== 'allDatasets' && this.state.activeCategory === 'n_views'){
-                    document.getElementById('allDatasets').checked = false;
-                }
-
-                /* Uncheck all other topics if checked */
-                this.state.datasetList.map( id => {
-                    if(activeId !== id) {
-                        document.getElementById(id).checked = false;
-                    }
-                })
-                break;
-            case 3: // years
-                this.state.activeYears.map(id => {
-                    if(activeId !== id && document.getElementById(id) !== null ) {
-                        document.getElementById(id).checked = false;
-                    }
-                })
-                break;
-            default: // category
-                this.state.categories.map(({id}) => {
-                    if(activeId !== id) {
-                        document.getElementById(id).checked = false;
-                    }
-                })
-                break;
-        }
-    }
-
-    checkQuarters() {
-        for (let quarter = 1; quarter <= this.state.activeQuarters.length; quarter++){
-            if(!this.state.activeQuarters.includes(quarter)){
-                document.getElementById(quarter.toString()).checked = false;
-            }else{
-                document.getElementById(quarter.toString()).checked = true;
-            }
-        }
     }
 
     getChartMessage(){
@@ -315,7 +187,7 @@ class DatasetContents extends Component{
                     <div className="sidebar">
                         <div className='categories'>
                             <p>Categories</p>
-                            {this.state.categories.map(({ id, value }) => {
+                            {this.state.categoryList.map(({ id, value }) => {
                                 return (
                                     <div className="checkbox">
                                         <input
@@ -323,7 +195,7 @@ class DatasetContents extends Component{
                                             id={id}
                                             name={id}
                                             value={value}
-                                            onChange={() => this.handleOnChange(id, 0)}
+                                            onChange={() => this.handleOnChangeLocal(id, 0)}
                                         />
                                         <label htmlFor={id}>{value}</label>
                                     </div>
@@ -339,7 +211,7 @@ class DatasetContents extends Component{
                                     id='allTopics'
                                     name='allTopics'
                                     value='All'
-                                    onChange={() => this.handleOnChange('allTopics', 1)}
+                                    onChange={() => this.handleOnChangeLocal('allTopics', 3)}
                                 />
                                 <label htmlFor='allTopics'>All</label>
                             </div>
@@ -351,7 +223,7 @@ class DatasetContents extends Component{
                                             id={topic}
                                             name={topic}
                                             value={topic}
-                                            onChange={() => this.handleOnChange(topic, 1)}
+                                            onChange={() => this.handleOnChangeLocal(topic, 3)}
                                         />
                                         <label htmlFor={topic}>{topic}</label>
                                     </div>
@@ -368,7 +240,7 @@ class DatasetContents extends Component{
                                         id='allDatasets'
                                         name='allDatasets'
                                         value='All'
-                                        onChange={() => this.handleOnChange('allDatasets', 2)}
+                                        onChange={() => this.handleOnChangeLocal('allDatasets', 4)}
                                     />
                                     <label htmlFor='allDatasets'>All</label>
                                 </div>
@@ -381,7 +253,7 @@ class DatasetContents extends Component{
                                             id={datasetId}
                                             name={datasetId}
                                             value={datasetId}
-                                            onChange={() => this.handleOnChange(datasetId, 2)}
+                                            onChange={() => this.handleOnChangeLocal(datasetId, 4)}
                                         />
                                         <label htmlFor={datasetId}>{datasetId}</label>
                                     </div>
@@ -398,7 +270,7 @@ class DatasetContents extends Component{
                                             id={year}
                                             name={year}
                                             value={year}
-                                            onChange={() => this.handleOnChangeYear(year)}
+                                            onChange={() => this.handleOnChangeLocal(year, 1)}
                                         />
                                         <label htmlFor={year}>{year}</label>
                                     </div>
@@ -415,7 +287,7 @@ class DatasetContents extends Component{
                                             id={quarter}
                                             name={quarter}
                                             value={'Q' + quarter}
-                                            onChange={() => this.handleOnChangeQuarter(quarter)}
+                                            onChange={() => this.handleOnChangeLocal(quarter, 2)}
                                         />
                                         <label htmlFor={quarter}>{'Q' + quarter}</label>
                                     </div>

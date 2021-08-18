@@ -1,3 +1,22 @@
+export const getActiveYearIndex = (activeYears, newYear) => {
+  try{
+      if(!activeYears.length){
+          throw 'active years are empty';
+      }
+
+      let index = 0;
+
+      while (activeYears[index] < newYear){
+          index++;
+      }
+
+      return index;
+
+  }catch (err) {
+      console.log(err);
+      return 0;
+  }
+};
 
 /**
  * Creates a list of values from a given field, from a set of records

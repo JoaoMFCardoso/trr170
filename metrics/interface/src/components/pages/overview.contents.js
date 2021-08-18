@@ -2,7 +2,9 @@ import React, { Component} from 'react';
 import { connect } from "react-redux";
 import {retrieveTotals} from "../../actions/totals";
 import TotalBarChart from "../charts/TotalBarChart";
-import {getYears, getQuarter, buildDataTotalBarChart} from "../../utils/record.handling.methods";
+import {getActiveYearIndex, getYears, getQuarter, buildDataTotalBarChart} from "../../utils/record.handling.methods";
+import {chartPaletteGenerator} from "../../utils/palette.generator";
+import {handleOnChange, checkQuarters} from "../../utils/handlers";
 
 import '../../styles/contents.css';
 import '../../styles/general.css';
@@ -11,15 +13,20 @@ class OverviewContents extends Component{
     constructor(props) {
         super(props);
         this.refreshData = this.refreshData.bind(this);
+        this.getActiveYearIndex = getActiveYearIndex.bind(this);
         this.getYears = getYears.bind(this);
         this.getQuarter = getQuarter.bind(this);
         this.buildDataTotalBarChart = buildDataTotalBarChart.bind(this);
+        this.chartPaletteGenerator = chartPaletteGenerator.bind(this);
+        this.handleOnChange = handleOnChange.bind(this);
+        this.checkQuarters = checkQuarters.bind(this);
 
         this.state = {
             activeCategory: "",
             activeYears : [],
+            singleYearMode : false,
             activeQuarters : [1,2,3,4],
-            categories : [
+            categoryList : [
                 {
                     id : 'n_dataverses',
                     value : 'Dataverses'
@@ -40,6 +47,8 @@ class OverviewContents extends Component{
             labels: [new Date().getFullYear()],
             quarters: [1,2,3,4],
             data : [],
+            backgroundColor : [],
+            borderColor : [],
         };
     }
 
@@ -48,78 +57,23 @@ class OverviewContents extends Component{
     }
 
     refreshData() {
+        const chartData = this.buildDataTotalBarChart(this.props.totals, this.state.activeYears, this.state.activeQuarters, this.state.activeCategory);
+        const palette = this.chartPaletteGenerator(chartData.length);
+
         this.setState({
             labels: this.getYears(this.props.totals),
-            data : this.buildDataTotalBarChart(this.props.totals, this.state.activeYears, this.state.activeQuarters, this.state.activeCategory),
+            data : chartData,
+            backgroundColor : palette.backgroundColor,
+            borderColor : palette.borderColor,
         });
 
-        this.checkQuarters();
+        this.checkQuarters(document, this.state);
     }
 
-    handleOnChangeCategory(id){
-
-        /* Change active chart */
-        this.state.activeCategory = id;
-
-        /* Uncheck all others */
-        this.uncheckCategories(id);
+    handleOnChangeLocal(id, type){
+        this.handleOnChange(id, type, document, this.state);
 
         this.refreshData();
-    }
-
-    handleOnChangeYear(year){
-
-        if(document.getElementById(year).checked){
-
-            /* Add to active years */
-            this.state.activeYears.push(year);
-
-        } else{
-            /* Remove from active years */
-            const index = this.state.activeYears.indexOf(year);
-            if (index > -1) {
-                this.state.activeYears.splice(index, 1);
-            }
-        }
-
-        this.refreshData();
-    }
-
-    handleOnChangeQuarter(quarter){
-
-        if(document.getElementById(quarter).checked){
-
-            /* Add to active quarters */
-            this.state.activeQuarters.push(quarter);
-            this.state.activeQuarters.sort();
-
-        } else{
-            /* Remove from active quarters */
-            const index = this.state.activeQuarters.indexOf(quarter);
-            if (index > -1) {
-                this.state.activeQuarters.splice(index, 1);
-            }
-        }
-
-        this.refreshData();
-    }
-
-    uncheckCategories(activeId) {
-        this.state.categories.map(({id}) => {
-            if(activeId != id) {
-                document.getElementById(id).checked = false;
-            }
-        })
-    }
-
-    checkQuarters() {
-        for (let quarter = 1; quarter <= this.state.activeQuarters.length; quarter++){
-            if(!this.state.activeQuarters.includes(quarter)){
-                document.getElementById(quarter.toString()).checked = false;
-            }else{
-                document.getElementById(quarter.toString()).checked = true;
-            }
-        }
     }
 
     chartDescriptions(){
@@ -136,9 +90,6 @@ class OverviewContents extends Component{
     }
 
     render() {
-
-
-
         return (
             <div id="content" className="container">
                 <div className="introduction">
@@ -149,7 +100,7 @@ class OverviewContents extends Component{
                     <div className="sidebar">
                         <div className='categories'>
                             <p>Categories</p>
-                        {this.state.categories.map(({ id, value }) => {
+                        {this.state.categoryList.map(({ id, value }) => {
                             return (
                                     <div className="checkbox">
                                             <input
@@ -157,7 +108,7 @@ class OverviewContents extends Component{
                                                 id={id}
                                                 name={id}
                                                 value={value}
-                                                onChange={() => this.handleOnChangeCategory(id)}
+                                                onChange={() => this.handleOnChangeLocal(id, 0)}
                                             />
                                             <label htmlFor={id}>{value}</label>
                                     </div>
@@ -174,7 +125,7 @@ class OverviewContents extends Component{
                                             id={year}
                                             name={year}
                                             value={year}
-                                            onChange={() => this.handleOnChangeYear(year)}
+                                            onChange={() => this.handleOnChangeLocal(year, 1)}
                                         />
                                         <label htmlFor={year}>{year}</label>
                                     </div>
@@ -191,7 +142,7 @@ class OverviewContents extends Component{
                                             id={quarter}
                                             name={quarter}
                                             value={'Q' + quarter}
-                                            onChange={() => this.handleOnChangeQuarter(quarter)}
+                                            onChange={() => this.handleOnChangeLocal(quarter, 2)}
                                         />
                                         <label htmlFor={quarter}>{'Q' + quarter}</label>
                                     </div>
@@ -201,7 +152,7 @@ class OverviewContents extends Component{
                     </div>
                     <div id="charts">
                         {this.chartDescriptions()}
-                        <TotalBarChart data={this.state.data} labels={this.state.activeYears}/>
+                        <TotalBarChart data={this.state.data} labels={this.state.activeYears} backgroundColor={this.state.backgroundColor} borderColor={this.state.borderColor}/>
                     </div>
                 </div>
             </div>

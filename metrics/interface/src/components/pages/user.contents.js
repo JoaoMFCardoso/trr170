@@ -3,9 +3,12 @@ import { connect } from "react-redux";
 import {retrieveAffiliations} from "../../actions/affiliations";
 import TotalBarChart from "../charts/TotalBarChart";
 import {getYears, getAffiliations, getQuarter, getRecordsByAffiliation, buildDataTotalBarChart} from "../../utils/record.handling.methods";
+import {chartPaletteGenerator} from "../../utils/palette.generator";
+import {checkQuarters, handleOnChange} from "../../utils/handlers";
 
 import '../../styles/contents.css';
 import '../../styles/general.css';
+
 
 
 class UserContents extends Component{
@@ -17,14 +20,18 @@ class UserContents extends Component{
         this.getQuarter = getQuarter.bind(this);
         this.getRecordsByAffiliation = getRecordsByAffiliation.bind(this);
         this.buildDataTotalBarChart = buildDataTotalBarChart.bind(this);
+        this.chartPaletteGenerator = chartPaletteGenerator.bind(this);
+        this.handleOnChange = handleOnChange.bind(this);
+        this.checkQuarters = checkQuarters.bind(this);
 
         this.state = {
             activeCategory: "",
             activeYears : [],
+            singleYearMode : false,
             activeAffiliation : "",
             activeQuarters : [1,2,3,4],
             affiliationList : [],
-            categories : [
+            categoryList : [
                 {
                     id : 'n_users',
                     value : 'Total Users'
@@ -33,6 +40,8 @@ class UserContents extends Component{
             labels: [new Date().getFullYear()],
             quarters: [1,2,3,4],
             data : [],
+            backgroundColor : [],
+            borderColor : [],
         };
     }
 
@@ -41,102 +50,25 @@ class UserContents extends Component{
     }
 
     refreshData() {
-        this.state.data = this.getRecordsByAffiliation(this.props.affiliations, this.state.activeAffiliation);
+        const recordsByAffiliation = this.getRecordsByAffiliation(this.props.affiliations, this.state.activeAffiliation);
+        const chartData = this.buildDataTotalBarChart(recordsByAffiliation, this.state.activeYears, this.state.activeQuarters, this.state.activeCategory);
+        const palette = this.chartPaletteGenerator(chartData.length);
 
         this.setState({
             affiliationList : this.getAffiliations(this.props.affiliations),
             labels : this.getYears(this.props.affiliations),
-            data : this.buildDataTotalBarChart(this.state.data, this.state.activeYears, this.state.activeQuarters, this.state.activeCategory),
+            data : chartData,
+            backgroundColor : palette.backgroundColor,
+            borderColor : palette.borderColor,
         });
 
-        this.checkQuarters();
+        this.checkQuarters(document, this.state);
     }
 
-    handleOnChangeCategory(id){
-
-        /* Change active chart */
-        this.state.activeCategory = id;
-
-        /* Uncheck all others */
-        this.uncheckCategories(id);
+    handleOnChangeLocal(id, type){
+        this.handleOnChange(id, type, document, this.state);
 
         this.refreshData();
-    }
-
-    handleOnChangeAffiliation(affiliation){
-
-        /* Add to active affiliation */
-        this.state.activeAffiliation = affiliation;
-
-        /* Uncheck all others */
-        this.uncheckAffiliations(affiliation);
-
-        this.refreshData();
-    }
-
-    handleOnChangeYear(year){
-
-        if(document.getElementById(year).checked){
-
-            /* Add to active years */
-            this.state.activeYears.push(year);
-
-        } else{
-            /* Remove from active years */
-            const index = this.state.activeYears.indexOf(year);
-            if (index > -1) {
-                this.state.activeYears.splice(index, 1);
-            }
-        }
-
-        this.refreshData();
-    }
-
-    handleOnChangeQuarter(quarter){
-
-        if(document.getElementById(quarter).checked){
-
-            /* Add to active quarters */
-            this.state.activeQuarters.push(quarter);
-            this.state.activeQuarters.sort();
-
-        } else{
-            /* Remove from active quarters */
-            const index = this.state.activeQuarters.indexOf(quarter);
-            if (index > -1) {
-                this.state.activeQuarters.splice(index, 1);
-            }
-        }
-
-        this.refreshData();
-    }
-
-    uncheckCategories(activeId) {
-        this.state.categories.map(({id}) => {
-            //TODO If the element has the same name as any of the ids in the html, then it might be necessary to verify if the element is the child of a sidebar div.
-            // For example, if the activeId is root, then all hell will break loose.
-            if(activeId != id) {
-                document.getElementById(id).checked = false;
-            }
-        })
-    }
-
-    uncheckAffiliations(activeId) {
-        this.state.affiliationList.map(id => {
-            if(activeId !== id) {
-                document.getElementById(id).checked = false;
-            }
-        })
-    }
-
-    checkQuarters() {
-        for (let quarter = 1; quarter <= this.state.activeQuarters.length; quarter++){
-            if(!this.state.activeQuarters.includes(quarter)){
-                document.getElementById(quarter.toString()).checked = false;
-            }else{
-                document.getElementById(quarter.toString()).checked = true;
-            }
-        }
     }
 
     chartDescriptions(){
@@ -150,8 +82,6 @@ class UserContents extends Component{
 
     render() {
 
-
-
         return (
             <div id="content" className="container">
                 <div className="introduction">
@@ -162,7 +92,7 @@ class UserContents extends Component{
                     <div className="sidebar">
                         <div className='categories'>
                             <p>Categories</p>
-                            {this.state.categories.map(({ id, value }) => {
+                            {this.state.categoryList.map(({ id, value }) => {
                                 return (
                                     <div className="checkbox">
                                         <input
@@ -170,7 +100,7 @@ class UserContents extends Component{
                                             id={id}
                                             name={id}
                                             value={value}
-                                            onChange={() => this.handleOnChangeCategory(id)}
+                                            onChange={() => this.handleOnChangeLocal(id, 0)}
                                         />
                                         <label htmlFor={id}>{value}</label>
                                     </div>
@@ -187,7 +117,7 @@ class UserContents extends Component{
                                             id={affiliation}
                                             name={affiliation}
                                             value={affiliation}
-                                            onChange={() => this.handleOnChangeAffiliation(affiliation)}
+                                            onChange={() => this.handleOnChangeLocal(affiliation, 7)}
                                         />
                                         <label htmlFor={affiliation}>{affiliation}</label>
                                     </div>
@@ -204,7 +134,7 @@ class UserContents extends Component{
                                             id={year}
                                             name={year}
                                             value={year}
-                                            onChange={() => this.handleOnChangeYear(year)}
+                                            onChange={() => this.handleOnChangeLocal(year, 1)}
                                         />
                                         <label htmlFor={year}>{year}</label>
                                     </div>
@@ -221,7 +151,7 @@ class UserContents extends Component{
                                             id={quarter}
                                             name={quarter}
                                             value={'Q' + quarter}
-                                            onChange={() => this.handleOnChangeQuarter(quarter)}
+                                            onChange={() => this.handleOnChangeLocal(quarter, 2)}
                                         />
                                         <label htmlFor={quarter}>{'Q' + quarter}</label>
                                     </div>
@@ -232,7 +162,7 @@ class UserContents extends Component{
                     <div id="charts">
                         <p>{this.chartDescriptions()}</p>
                         <p><b>The active Affiliation:</b> {this.state.activeAffiliation}</p>
-                        <TotalBarChart data={this.state.data} labels={this.state.activeYears}/>
+                        <TotalBarChart data={this.state.data} labels={this.state.activeYears} backgroundColor={this.state.backgroundColor} borderColor={this.state.borderColor}/>
                     </div>
                 </div>
             </div>
