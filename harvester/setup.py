@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 setuptools.setup(
     name="TRR-170-Metrics-JoaoMFCardoso", # Replace with your own username
     version="0.0.1",
-    author="Jo�o Cardoso",
+    author="Joao Cardoso",
     author_email="joao.cardoso.geral@gmail.com",
     description="A operations collection package for the TRR-170 Dataverse",
     long_description=long_description,

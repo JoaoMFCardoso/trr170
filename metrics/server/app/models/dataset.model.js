@@ -3,6 +3,9 @@ module.exports = (sequelize, Sequelize) => {
         dataset_id: {
             type: Sequelize.STRING
         },
+        topic: {
+            type: Sequelize.STRING
+        },
         n_filecount: {
             type: Sequelize.INTEGER
         },

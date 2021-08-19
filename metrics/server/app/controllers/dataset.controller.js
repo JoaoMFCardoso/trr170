@@ -15,6 +15,7 @@ exports.create = (req, res) => {
     // Create a Dataset
     const dataset = {
         dataset_id: req.body.dataset_id,
+        topic: req.body.topic,
         n_filecount: req.body.n_filecount,
         n_size: req.body.n_size,
         n_versions: req.body.n_versions,

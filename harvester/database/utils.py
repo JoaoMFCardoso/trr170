@@ -23,11 +23,40 @@ def execute_query(db_connection, sql_query, values):
         conn = db_connection.connect()
         cur = conn.cursor()
 
-        # execute the INSERT statement
+        # execute the Insert statement
         result = cur.execute(sql_query, values)
 
         # commit the changes to the database
         conn.commit()
+        # close communication with the database
+        cur.close()
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    finally:
+        if conn is not None:
+            conn.close()
+
+    return result
+
+
+# Fetch Data
+# Executes a provided query
+# Input:
+#   sql_query: An SQL query.
+# Output:
+#   result: The result of the query.
+def fetch_query(db_connection, sql_query):
+    conn = None
+    result = None
+    try:
+        # connect to the PostgreSQL database, and create a new cursor.
+        conn = db_connection.connect()
+        cur = conn.cursor()
+
+        # execute the Insert statement
+        cur.execute(sql_query)
+        result = cur.fetchall()
+
         # close communication with the database
         cur.close()
     except (Exception, psycopg2.DatabaseError) as error:
@@ -46,7 +75,7 @@ def execute_query(db_connection, sql_query, values):
 # Output: None
 def remove(db_connection, table_name, db_id):
     # Creating the SQL query for the deletion.
-    sql = "DELETE FROM " + table_name + " WHERE id = %d;"
+    sql = "DELETE FROM " + table_name + " WHERE id = %s;"
 
     # Executing the query
     execute_query(db_connection, sql, db_id)
@@ -60,7 +89,7 @@ def remove(db_connection, table_name, db_id):
 #   row: The database table row corresponding the id.
 def get(db_connection, table_name, db_id):
     # Creating the SQL query for the deletion.
-    sql = "SELECT * FROM " + table_name + " WHERE id = %d ORDER BY ts;"
+    sql = "SELECT * FROM " + table_name + " WHERE id = %s ORDER BY ts;"
 
     # Executing the query
     row = execute_query(db_connection, sql, db_id)
