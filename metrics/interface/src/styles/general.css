@@ -17,6 +17,10 @@ body {
     color: #808080;
     box-sizing: border-box;
     position: relative;
+    top: 60px;
+    padding-bottom: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 code {

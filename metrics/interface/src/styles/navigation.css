@@ -12,10 +12,6 @@
     top: 0;
 }
 
-#navbar-contents {
-    display: flex;
-    justify-content: space-between;
-}
 #navbar-logo {
     float: left;
     height: auto;

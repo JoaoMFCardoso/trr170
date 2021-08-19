@@ -9,18 +9,16 @@ import logo from "../../images/logo.png";
 const Navigation = () => {
     return (
         <nav className="navbar">
-            <div id="navbar-contents" className="container">
-                <Link to="/">
-                    <img src={logo} alt="TRR 170-DB homepage"/>
-                </Link>
-                <ul id="navbar-menu">
-                    <li className="active" key="overview"><Link to="/">Overview</Link></li>
-                    <li key="dataverses"><Link to="/dataverses">Dataverses</Link></li>
-                    <li key="datasets"><Link to="/datasets">Datasets</Link></li>
-                    <li key="files"><Link to="/files">Files</Link></li>
-                    <li key="users"><Link to="/users">Users</Link></li>
-                </ul>
-            </div>
+            <Link to="/">
+                <img src={logo} alt="TRR 170-DB homepage"/>
+            </Link>
+            <ul id="navbar-menu">
+                <li className="active" key="overview"><Link to="/">Overview</Link></li>
+                <li key="dataverses"><Link to="/dataverses">Dataverses</Link></li>
+                <li key="datasets"><Link to="/datasets">Datasets</Link></li>
+                <li key="files"><Link to="/files">Files</Link></li>
+                <li key="users"><Link to="/users">Users</Link></li>
+            </ul>
         </nav>
     )
 }
