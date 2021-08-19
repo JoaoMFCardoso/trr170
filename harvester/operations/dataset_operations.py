@@ -31,9 +31,9 @@ class DatasetOperations:
     @staticmethod
     def get_metadata_field_item(typeName, metadata_object) -> object:
         # Runs fields to find the correct one
-        for field in metadata_object['data']['citation']['fields']:
-            if field['typeName'] == typeName:
-                return field
+        for field in metadata_object['data'].items():
+            if field[0] == typeName:
+                return field[1]
 
         return None
 
@@ -273,19 +273,26 @@ class DatasetOperations:
 
             # Get the topic classification metadata block
             if objects['status'] == 'OK':
-                field = self.get_metadata_field_item('topicClassification', objects)
+                field = self.get_metadata_field_item('citation:Topic Classification', objects)
 
                 # Check if the subject metadata block exists.
-                if field is not None:
-                    # Run topic value metadata block
-                    for topics in field['value']:
-                        if 'topicClassValue' in topics:
-                            topic = topics['topicClassValue']['value']
+                if field is not None and type(field) is list:  # Check if list or the default dict
+                    # Run keyword metadata block
+                    for topics in field:
+                        if 'topicClassification:Term' in topics:
+                            topic = topics['topicClassification:Term']
                             if dictionary.get(topic) is None:
                                 dictionary[topic] = 1
                             else:
                                 count = dictionary[topic]
                                 dictionary[topic] = count + 1
+                elif field is not None:
+                    topic = field['topicClassification:Term']
+                    if dictionary.get(topic) is None:
+                        dictionary[topic] = 1
+                    else:
+                        count = dictionary[topic]
+                        dictionary[topic] = count + 1
 
         return dictionary
 
@@ -382,19 +389,26 @@ class DatasetOperations:
 
             # Get the Keywords metadata block
             if objects['status'] == 'OK':
-                field = self.get_metadata_field_item('keyword', objects)
+                field = self.get_metadata_field_item('citation:Keyword', objects)
 
                 # Check if the keyword metadata block exists.
-                if field is not None:
+                if field is not None and type(field) is list:  # Check if list or the default dict
                     # Run keyword metadata block
-                    for keywords in field['value']:
-                        if 'keywordValue' in keywords:
-                            keyword = keywords['keywordValue']['value']
+                    for keywords in field:
+                        if 'keyword:Term' in keywords:
+                            keyword = keywords['keyword:Term']
                             if dictionary.get(keyword) is None:
                                 dictionary[keyword] = 1
                             else:
                                 count = dictionary[keyword]
                                 dictionary[keyword] = count + 1
+                elif field is not None:
+                    keyword = field['keyword:Term']
+                    if dictionary.get(keyword) is None:
+                        dictionary[keyword] = 1
+                    else:
+                        count = dictionary[keyword]
+                        dictionary[keyword] = count + 1
 
         return dictionary
 
@@ -429,19 +443,26 @@ class DatasetOperations:
             # JSON response
             objects = json.loads(request.content.decode('utf-8', 'ignore'))
 
-            # Get the Keywords metadata block
+            # Get the Subject metadata block
             if objects['status'] == 'OK':
-                field = self.get_metadata_field_item('subject', objects)
+                field = self.get_metadata_field_item('Subject', objects)
 
                 # Check if the subject metadata block exists.
-                if field is not None:
+                if field is not None and type(field) is list:
                     # Run subject metadata block
-                    for subject in field['value']:
+                    for subject in field:
                         if dictionary.get(subject) is None:
                             dictionary[subject] = 1
                         else:
                             count = dictionary[subject]
                             dictionary[subject] = count + 1
+
+                elif field is not None:
+                    if dictionary.get(field) is None:
+                        dictionary[field] = 1
+                    else:
+                        count = dictionary[field]
+                        dictionary[field] = count + 1
 
         return dictionary
 
@@ -478,16 +499,21 @@ class DatasetOperations:
 
             # Get the Keywords metadata block
             if objects['status'] == 'OK':
-                field = self.get_metadata_field_item('topicClassification', objects)
+                field = self.get_metadata_field_item('citation:Topic Classification', objects)
 
                 # Check if the subject metadata block exists.
-                if field is not None:
-                    # Run topic value metadata block
-                    for topics in field['value']:
-                        if 'topicClassValue' in topics:
-                            topic = topics['topicClassValue']['value']
+                if field is not None and type(field) is list:  # Check if list or the default dict
+                    # Run keyword metadata block
+                    for topics in field:
+                        if 'topicClassification:Term' in topics:
+                            topic = topics['topicClassification:Term']
                             if dictionary.get(dataset_id) is None:
                                 dictionary[dataset_id] = topic
+                elif field is not None:
+                    topic = field['topicClassification:Term']
+                    if dictionary.get(dataset_id) is None:
+                        dictionary[dataset_id] = topic
+
         return dictionary
 
     # Get All Dataset filecount
@@ -591,17 +617,23 @@ class DatasetOperations:
 
             # Fill dictionary
             if dictionary.get(dataset_id) is None and objects['status'] == 'OK':
-                field = self.get_metadata_field_item('distributor', objects)
+                field = self.get_metadata_field_item('citation:Distributor', objects)
                 distributor = []
-                if field is not None:
 
-                    # Run distributors
-                    for distr in field['value']:
-                        distributorName = distr['distributorName']['value']
+                if field is not None and type(field) is list:  # Check if list or the default dict
+                    # Run distributor metadata block
+                    for distributors in field:
+                        distributorName = distributors['distributor:Name']
                         distributorAffiliation = None
-                        if 'distributorAffiliation' in distr:
-                            distributorAffiliation = distr['distributorAffiliation']['value']
+                        if 'distributor:Affiliation' in distributors:
+                            distributorAffiliation = distributors['distributor:Affiliation']
                         distributor.append([distributorName, distributorAffiliation])
+                elif field is not None:
+                    distributorName = field['distributor:Name']
+                    distributorAffiliation = None
+                    if field['distributor:Affiliation'] is not None:
+                        distributorAffiliation = field['distributor:Affiliation']
+                    distributor.append([distributorName, distributorAffiliation])
 
                 dictionary[dataset_id] = distributor
 
