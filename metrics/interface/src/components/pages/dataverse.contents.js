@@ -2,12 +2,21 @@ import React, { Component} from 'react';
 import { connect } from "react-redux";
 import {retrieveDataverses} from "../../actions/dataverses";
 import TotalBarChart from "../charts/TotalBarChart";
-import {getYears, getDataverseIds, getQuarter, getRecordsByDataverseId, buildDataTotalBarChart} from "../../utils/record.handling.methods";
+import DoughnutChart from "../charts/DoughnutChart";
+import {
+    getYears,
+    getDataverseIds,
+    getQuarter,
+    getRecordsByDataverseId,
+    buildDataTotalBarChart,
+    buildDataDoughnutChart
+} from "../../utils/record.handling.methods";
 import {checkQuarters, handleOnChange} from "../../utils/handlers";
 import {chartPaletteGenerator} from "../../utils/palette.generator";
 
 import '../../styles/contents.css';
 import '../../styles/general.css';
+
 
 
 
@@ -20,6 +29,7 @@ class DataverseContents extends Component{
         this.getQuarter = getQuarter.bind(this);
         this.getRecordsByDataverseId = getRecordsByDataverseId.bind(this);
         this.buildDataTotalBarChart = buildDataTotalBarChart.bind(this);
+        this.buildDataDoughnutChart = buildDataDoughnutChart.bind(this);
         this.chartPaletteGenerator = chartPaletteGenerator.bind(this);
         this.handleOnChange = handleOnChange.bind(this);
         this.checkQuarters = checkQuarters.bind(this);
@@ -54,13 +64,21 @@ class DataverseContents extends Component{
     }
 
     refreshData() {
+        const yearData = this.getYears(this.props.dataverses);
         const recordsByDataverseId = this.getRecordsByDataverseId(this.props.dataverses, this.state.activeDataverse);
-        const chartData = this.buildDataTotalBarChart(recordsByDataverseId, this.state.activeYears, this.state.activeQuarters, this.state.activeCategory);
+        let chartData = null;
+
+        if(this.state.activeDataverse === 'all'){
+            chartData = this.buildDataDoughnutChart(this.props.dataverses, this.state.activeYears, this.state.dataverseList, 'dataverse_id', this.state.activeCategory);
+        }else{
+            chartData = this.buildDataTotalBarChart(recordsByDataverseId, this.state.activeYears, this.state.activeQuarters, this.state.activeCategory);
+        }
+
         const palette = this.chartPaletteGenerator(chartData.length);
 
         this.setState({
             dataverseList : this.getDataverseIds(this.props.dataverses),
-            labels : this.getYears(this.props.dataverses),
+            labels : yearData,
             data : chartData,
             backgroundColor : palette.backgroundColor,
             borderColor : palette.borderColor,
@@ -84,10 +102,15 @@ class DataverseContents extends Component{
         }
     }
 
+    getChart() {
+        if(this.state.activeDataverse === 'all'){
+            return <DoughnutChart data={this.state.data} labels={this.state.dataverseList} backgroundColor={this.state.backgroundColor} borderColor={this.state.borderColor}/>;
+        }else{
+            return <TotalBarChart data={this.state.data} labels={this.state.activeYears}  backgroundColor={this.state.backgroundColor} borderColor={this.state.borderColor}/>;
+        }
+    }
+
     render() {
-
-
-
         return (
             <div id="content" className="container">
                 <div className="introduction">
@@ -113,8 +136,19 @@ class DataverseContents extends Component{
                                 );
                             })}
                         </div>
-                        <div className='dataverses'>
+                        {this.state.activeCategory !== '' &&
+                            <div className='dataverses'>
                             <p>Dataverses</p>
+                            <div className="checkbox">
+                                <input
+                                    type="checkbox"
+                                    id='all'
+                                    name='all'
+                                    value='All'
+                                    onChange={() => this.handleOnChangeLocal('all', 5)}
+                                />
+                                <label htmlFor='all'>All</label>
+                            </div>
                             {this.state.dataverseList.map(dataverseId => {
                                 return (
                                     <div className="checkbox">
@@ -129,7 +163,7 @@ class DataverseContents extends Component{
                                     </div>
                                 );
                             })}
-                        </div>
+                        </div>}
                         <div className='years'>
                             <p>Years</p>
                             {this.state.labels.map(year => {
@@ -168,7 +202,7 @@ class DataverseContents extends Component{
                     <div id="charts">
                         <p>{this.chartDescriptions()}</p>
                         <p><b>The active Dataverse:</b> {this.state.activeDataverse}</p>
-                        <TotalBarChart data={this.state.data} labels={this.state.activeYears} backgroundColor={this.state.backgroundColor} borderColor={this.state.borderColor}/>
+                        {this.getChart()}
                     </div>
                 </div>
             </div>

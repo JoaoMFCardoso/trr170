@@ -96,6 +96,11 @@ export const handleOnChange = (id, type, document, state) => {
         case 5:
             /* Add to active dataverse */
             state.activeDataverse = id;
+            if(id === 'all'){
+                state.singleYearMode = true;
+            }else{
+                state.singleYearMode = false;
+            }
             uncheck(id, type, document, state);
             break;
         case 6:
@@ -169,8 +174,14 @@ export const uncheck = (activeId, type, document, state ) => {
             })
             break;
         case 5:
-            state.dataverseList.map(id => {
-                if(activeId != id) {
+            /* Uncheck the allDatasets if checked */
+            if(activeId !== 'all'){
+                document.getElementById('all').checked = false;
+            }
+
+            /* Uncheck all other topics if checked */
+            state.dataverseList.map( id => {
+                if(activeId !== id) {
                     document.getElementById(id).checked = false;
                 }
             })

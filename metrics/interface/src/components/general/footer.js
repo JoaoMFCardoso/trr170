@@ -7,7 +7,7 @@ import '../../styles/general.css';
 const Footer = () => {
     return (
         <div id="footer">
-            <div className="container">
+            <div className="container" >
                 <div className="row">
                     <div className="col-sm-8 small">
                         <span>Copyright © 2021</span>

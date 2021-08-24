@@ -45,7 +45,7 @@ const TotalBarChart = ({ data, labels, backgroundColor, borderColor }) => {
             width={800}
             options={{
                 hover: true,
-                responsive: true,
+                responsive: false,
                 legend: {
                     position: 'bottom'
                 },

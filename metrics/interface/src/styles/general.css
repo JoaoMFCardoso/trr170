@@ -6,19 +6,23 @@ body {
     background-color: #fff;
     display: flex;
     flex-direction: column;
+    padding-bottom: 100px;
 }
 
 .container {
-    width: 970px;
+    width: 1170px;
     padding-right: 15px;
     padding-left: 15px;
     margin-right: auto;
     margin-left: auto;
+    position: relative;
+    padding-bottom: 0;
+}
+
+#content {
+    top: 60px;
     color: #808080;
     box-sizing: border-box;
-    position: relative;
-    top: 60px;
-    padding-bottom: 0;
     display: flex;
     flex-direction: column;
 }
