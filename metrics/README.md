@@ -89,7 +89,9 @@ The metrics database should now have all the necessary tables and fields (they c
 
 Now that the database has been configured, you need to configure the Server.
 
-1. Edit the 'db.config.js' file, and add the appropriate database configurations by editing the file with any editor of your choosing. The file is located under the 'controllers' directory. 
+1. Database Configuration
+
+Edit the 'db.config.js' file, and add the appropriate database configurations by editing the file with any editor of your choosing. The file is located under the 'controllers' directory. 
 
 ```
 trr170/metrics/server/app/controllers/db.config.js
@@ -119,7 +121,9 @@ module.exports = {
 };
 ```
 
-2. Edit the 'server.js' file, and specify the endpoint for the API.
+2. Endpoint Configuration
+
+Edit the 'server.js' file, and specify the endpoint for the API.
 
 ```
 trr170/metrics/server/server.js
@@ -142,7 +146,7 @@ app.listen(PORT, () => {
 });
 ```
 
-3. Install dependencies.
+3. Install Dependencies.
 
 To do so, run the npm install command in the root directory of the server.
 
@@ -152,7 +156,7 @@ npm install
 
 ```
 
-4. Running the server
+4. Running the Server
 
 To run the server you need to execute the 'server.js' file
 
@@ -163,7 +167,66 @@ node server.js
 
 ### Interface Configuration and Execution
 
+Having the database and the server running we can now configure and run the metrics interface.
 
+1. Base URL
+
+The first step is to define the base URL in the 'http-common.js' file to the desired base URL. In the example below the base url is set to run in a localhost running in port 8080.
+
+It is important to note that any base URL that you choose must be inserted in the following format: <base_URL>/api.
+
+**http-common.js example**
+```
+import axios from "axios";
+
+export default axios.create({
+    baseURL: "http://localhost:8080/api",
+    headers: {
+        "Content-type": "application/json"
+    }
+});
+```
+
+2. Endpoint Port
+
+The next step is to change the port number in the '.env' file. The selected port number must match the one previously defined in the 'server.js' file.
+
+**server.js example**
+```
+...
+var corsOptions = {
+    origin: "http://localhost:8081"
+};
+...
+```
+
+**.env example**
+```
+PORT=8081
+```
+
+3. Install Dependencies.
+
+To do so, run the npm install command in the root directory of the interface.
+
+```
+cd trr170/metrics/interface
+npm install
+
+```
+
+4. Running the interface
+
+As the interface is a [React] app you should follow the official [deployment tutorial].
+
+For development purposes, you can type the following command to launch the interface localy:
+
+```
+cd trr170/metrics/interface
+npm start
+```
+
+This will launch the interface localy.
 
 [RESTful API]: https://restfulapi.net/
 [React]: https://reactjs.org/
@@ -171,3 +234,4 @@ node server.js
 [JavaScript]: https://www.javascript.com/
 [PostgreSQL]: https://www.postgresql.org/
 [tutorial]: https://www.postgresql.org/docs/12/tutorial-createdb.html
+[deployment tutorial]: https://create-react-app.dev/docs/deployment/
