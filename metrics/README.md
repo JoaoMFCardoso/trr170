@@ -100,6 +100,7 @@ trr170/metrics/server/app/controllers/db.config.js
 You should edit the following 4 fields.
 
 - `HOST`: The host for a Database installation (e.g., localhost or server IP address.).
+- `PORT`: The port where the application will run.
 - `USER`: The database username.
 - `PASSWORD`: The user password.
 - `DB`: The database name should be *metrics*.
@@ -108,6 +109,7 @@ You should edit the following 4 fields.
 ```
 module.exports = {
     HOST: "localhost",
+    PORT: "8081",
     USER: "dv_harvester",
     PASSWORD: "2021.harvester",
     DB: "metrics",
