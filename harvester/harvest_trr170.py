@@ -4,8 +4,8 @@ Created on 10 Fev 2021
 @author: Joao M. F. Cardoso
 """
 
-from harvester.connection import dataverse_connection, database_connection
-from harvester.database import populate
+from connection import dataverse_connection, database_connection
+from database import populate
 import configparser
 
 # Get the configurations from config.ini

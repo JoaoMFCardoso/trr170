@@ -5,7 +5,7 @@ Created on 7 Jan 2021
 """
 import unittest
 import configparser
-from harvester.connection import dataverse_connection
+from connection import dataverse_connection
 
 
 class ConnectionTest(unittest.TestCase):

@@ -3,7 +3,7 @@ Created on 16 Dec 2020
 
 @author: Joao M. F. Cardoso
 """
-from harvester.connection import dataverse_connection
+from connection import dataverse_connection
 import json
 
 

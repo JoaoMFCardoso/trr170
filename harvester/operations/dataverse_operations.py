@@ -3,8 +3,8 @@ Created on 18 Jan 2021
 
 @author: Joao M. F. Cardoso
 """
-from harvester.connection import dataverse_connection
-from harvester.operations import dataset_operations
+from connection import dataverse_connection
+from operations import dataset_operations
 import json
 
 

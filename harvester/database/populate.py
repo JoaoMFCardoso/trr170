@@ -5,9 +5,9 @@ Created on 27 Jan 2021
 """
 
 
-from harvester.connection import dataverse_connection, database_connection
-from harvester.operations import dataverse_operations, dataset_operations, user_operations, file_operations, general_operations
-from harvester.database import utils
+from connection import dataverse_connection, database_connection
+from operations import dataverse_operations, dataset_operations, user_operations, file_operations, general_operations
+from database import utils
 from datetime import datetime
 
 
