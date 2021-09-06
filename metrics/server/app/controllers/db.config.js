@@ -1,8 +1,8 @@
 module.exports = {
     HOST: "localhost",
-    PORT: "8081",
-    USER: "dv_harvester",
-    PASSWORD: "2021.harvester",
+    PORT: "1234",
+    USER: "fancy_user",
+    PASSWORD: "fancy_password",
     DB: "metrics",
     dialect: "postgres",
     pool: {
