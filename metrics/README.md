@@ -99,11 +99,13 @@ trr170/metrics/server/app/controllers/db.config.js
 ```
 You should edit the following 4 fields.
 
-- `HOST`: The host for a Database installation (e.g., localhost or server IP address.).
-- `PORT`: The port where the database is running.
+- `HOST`: The host for a Database installation (default: localhost).
+- `PORT`: The port where the database is running (default: dialect default).
 - `USER`: The database username.
 - `PASSWORD`: The user password.
 - `DB`: The database name should be *metrics*.
+- `dialect` : The database dialect. (currently supported: 'mysql', 'sqlite', 'postgres', 'mssql')
+- `pool` : pool configuration used to pool database connections.
 
 **db.config.js example**
 ```
@@ -132,17 +134,18 @@ trr170/metrics/server/server.js
 
 ```
 
-Both the origin and the port need to be configured appropriately. In the example below the endpoint being used is port 8081 from the localhost.
+Both the origin and the port need to be configured appropriately. 
+In the example below the listening port is port 1234 from the localhost, whilst the origin is defined as "http://localhost:9999". These values will be relevant during the interface configuration.
 
 **server.js example**
 ```
 ...
 var corsOptions = {
-    origin: "http://localhost:8081"
+    origin: "http://localhost:9999"
 };
 ...
 // set port, listen for requests
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 1234;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}.`);
 });
@@ -173,7 +176,7 @@ Having the database and the server running we can now configure and run the metr
 
 1. Base URL
 
-The first step is to define the base URL in the 'http-common.js' file to the desired base URL. In the example below the base url is set to run in a localhost running in port 8080.
+The first step is to define the base URL in the 'http-common.js' file to the desired base URL. In the example below the base url is set to run in a localhost running in port 1234, which matches the listening port defined in the endpoint configuration of server.js.
 
 It is important to note that any base URL that you choose must be inserted in the following format: <base_URL>/api.
 
@@ -182,7 +185,7 @@ It is important to note that any base URL that you choose must be inserted in th
 import axios from "axios";
 
 export default axios.create({
-    baseURL: "http://localhost:8080/api",
+    baseURL: "http://localhost:1234/api",
     headers: {
         "Content-type": "application/json"
     }
@@ -197,14 +200,14 @@ The next step is to change the port number in the '.env' file. The selected port
 ```
 ...
 var corsOptions = {
-    origin: "http://localhost:8081"
+    origin: "http://localhost:9999"
 };
 ...
 ```
 
 **.env example**
 ```
-PORT=8081
+PORT=9999
 ```
 
 3. Install Dependencies.
