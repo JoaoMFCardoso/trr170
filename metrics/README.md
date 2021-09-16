@@ -20,8 +20,9 @@ The metrics database is implemented using [PostgreSQL].
 
 ## Requirements
 
-- Node Js
-- PostgreSQL
+- Node Js  ```v14.16.0```
+- npm ```v6.14.11```
+- psql ```v12.03```
 
 ---
 ---
