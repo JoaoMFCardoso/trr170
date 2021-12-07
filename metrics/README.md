@@ -135,17 +135,17 @@ trr170/metrics/server/server.js
 ```
 
 Both the origin and the port need to be configured appropriately. 
-In the example below the listening port is port 1234 from the localhost, whilst the origin is defined as "http://localhost:9999". These values will be relevant during the interface configuration.
+In the example below the listening port is port 8080 from the localhost, whilst the origin is defined as "http://localhost:8081". These values will be relevant during the interface configuration.
 
 **server.js example**
 ```
 ...
 var corsOptions = {
-    origin: "http://localhost:9999"
+    origin: "http://localhost:8081"
 };
 ...
 // set port, listen for requests
-const PORT = process.env.PORT || 1234;
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}.`);
 });
@@ -200,14 +200,14 @@ The next step is to change the port number in the '.env' file. The selected port
 ```
 ...
 var corsOptions = {
-    origin: "http://localhost:9999"
+    origin: "http://localhost:8081"
 };
 ...
 ```
 
 **.env example**
 ```
-PORT=9999
+PORT=8081
 ```
 
 3. Install Dependencies.
