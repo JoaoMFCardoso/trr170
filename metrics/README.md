@@ -112,7 +112,7 @@ You should edit the following 4 fields.
 ```
 module.exports = {
     HOST: "localhost",
-    PORT: "1234",
+    PORT: "5432",
     USER: "fancy_user",
     PASSWORD: "fancy_password",
     DB: "metrics",
@@ -186,7 +186,7 @@ It is important to note that any base URL that you choose must be inserted in th
 import axios from "axios";
 
 export default axios.create({
-    baseURL: "http://localhost:1234/api",
+    baseURL: "http://localhost:8081/api",
     headers: {
         "Content-type": "application/json"
     }
