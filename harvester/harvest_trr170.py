@@ -14,8 +14,8 @@ config.read('./config.ini')
 
 # Dataverse
 print("Getting Dataverse configurations ...")
-base_url = config['TRR170_DV']['base_url']
-api_key = config['TRR170_DV']['api_key']
+base_url = config['TEST_DV']['base_url']
+api_key = config['TEST_DV']['api_key']
 print("Getting Dataverse configurations ... DONE")
 
 # Database
