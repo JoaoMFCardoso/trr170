@@ -177,7 +177,7 @@ Having the database and the server running we can now configure and run the metr
 
 1. Base URL
 
-The first step is to define the base URL in the 'http-common.js' file to the desired base URL. In the example below the base url is set to run in a localhost running in port 1234, which matches the listening port defined in the endpoint configuration of server.js.
+The first step is to define the base URL in the 'http-common.js' file to the desired base URL. In the example below the base url is set to run in a localhost running in port 8080, which matches the listening port defined in the endpoint configuration of server.js.
 
 It is important to note that any base URL that you choose must be inserted in the following format: <base_URL>/api.
 
@@ -186,7 +186,7 @@ It is important to note that any base URL that you choose must be inserted in th
 import axios from "axios";
 
 export default axios.create({
-    baseURL: "http://localhost:8081/api",
+    baseURL: "http://localhost:8080/api",
     headers: {
         "Content-type": "application/json"
     }
